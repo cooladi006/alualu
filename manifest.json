@@ -1,0 +1,11 @@
+{
+  "name": "Alu-Alu Command",
+  "short_name": "Alu-Alu",
+  "description": "Own-money ROI and cost control for the Alu-Alu pharma packaging plant, Chennai.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFFFF"
+}
