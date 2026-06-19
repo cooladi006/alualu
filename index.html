@@ -90,7 +90,15 @@
   .rmx .rl{padding:7px 10px;color:var(--ink2);border-top:1px solid var(--hairS);background:#fff;display:flex;align-items:center}
   .rmx .rc{padding:7px 8px;text-align:right;border-top:1px solid var(--hairS);font-variant-numeric:tabular-nums;font-weight:500;display:flex;align-items:center;justify-content:flex-end}
   .rmx .strong{font-weight:700}
-  @media print{body *{visibility:hidden!important}.noprint{display:none!important}}
+  .sheet{margin-top:18px;background:#fff;border:1px solid var(--hairS);border-radius:16px;padding:22px 20px 26px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 16px 38px rgba(0,0,0,.055)}
+  .actionbar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(255,255,255,.82);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:1px solid var(--hairS);padding:12px 20px calc(14px + env(safe-area-inset-bottom))}
+  .abinner{max-width:600px;margin:0 auto;display:flex;align-items:center;gap:11px}
+  .share-btn{flex:1 1 auto;display:inline-flex;align-items:center;justify-content:center;gap:9px;font:inherit;font-size:16px;font-weight:600;color:#fff;background:var(--green);border:none;border-radius:14px;padding:15px 20px;cursor:pointer;box-shadow:0 6px 20px rgba(14,124,87,.30);transition:transform .14s ease,box-shadow .2s ease}
+  .share-btn:active{transform:scale(.985);box-shadow:0 3px 12px rgba(14,124,87,.26)}
+  .share-btn svg{width:17px;height:17px;flex:0 0 auto}
+  .print-btn{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;font:inherit;font-size:15px;font-weight:500;color:var(--ink2);background:var(--surface);border:none;border-radius:14px;padding:15px 17px;cursor:pointer;transition:transform .12s ease,background .2s ease}
+  .print-btn:active{transform:scale(.97);background:#ECECEF}
+  @media print{body *{visibility:hidden!important}#pr,#pr *{visibility:visible!important}#pr{position:absolute;left:0;top:0;width:100%}.sheet{box-shadow:none!important;border:none!important;padding:0!important;margin:0!important}.actionbar,.noprint{display:none!important}}
 </style>
 </head>
 <body>
@@ -194,16 +202,42 @@ function vendorBlock(matref,bindp,mat){
   return h;
 }
 
+function computeROEfocus(){var M=compute();return M.tiers[S.focus].roeCap;}
+function solveLine(setter,getter,lo,hi,target){
+  var orig=getter();
+  function f(x){setter(x);return computeROEfocus()-target;}
+  var a=lo,b=hi,fa=f(a),fb=f(b);
+  if(isNaN(fa)||isNaN(fb)||fa*fb>0){setter(orig);return null;}
+  var m=a;
+  for(var k=0;k<48;k++){m=(a+b)/2;var fm=f(m);if(fa*fm<=0){b=m;fb=fm;}else{a=m;fa=fm;}if(Math.abs(fm)<0.01)break;}
+  setter(orig);return m;
+}
+function marginOfSafety(M){
+  var tgt=nf(S.targetROI),T=M.tiers,fv=focusVol();
+  var volLine=null;
+  for(var i=0;i<T.length-1;i++){if((T[i].roeCap-tgt)*(T[i+1].roeCap-tgt)<=0&&T[i+1].roeCap!==T[i].roeCap){var r=(tgt-T[i].roeCap)/(T[i+1].roeCap-T[i].roeCap);volLine=T[i].vol+r*(T[i+1].vol-T[i].vol);break;}}
+  if(volLine===null&&T[0].roeCap>=tgt)volLine=T[0].vol;
+  var fol=S.substrates[1],folCur=subRate(fol);
+  var foilLine=solveLine(function(x){fol.vendors[fol.sel].rate=String(x);},function(){return subRate(fol);},folCur*0.3,folCur*3,tgt);
+  var priceCur=nf(S.price);
+  var priceLine=solveLine(function(x){S.price=String(x);},function(){return nf(S.price);},nf(M.base.finalRM)+1,priceCur*2.5,tgt);
+  var debCur=nf(S.debDays);
+  var debLine=solveLine(function(x){S.debDays=String(x);},function(){return nf(S.debDays);},0,400,tgt);
+  return {volLine:volLine,fv:fv,foilLine:foilLine,folCur:folCur,priceLine:priceLine,priceCur:priceCur,debLine:debLine,debCur:debCur};
+}
 function viewDashboard(M){
-  var s=M.sel,price=nf(S.price),fv=focusVol();
-  var mc=s.pass?"var(--green)":"var(--red)";
-  var rmW=Math.max(0,Math.min(100,M.base.finalRM/price*100));
-  var convW=Math.max(0,Math.min(100-rmW,s.conv/price*100));
-  var marW=Math.max(0,100-rmW-convW);
+  var s=M.sel,price=nf(S.price),fv=focusVol(),tgt=nf(S.targetROI);
+  var roe=s.roeCap,pass=roe>=tgt,withinBank=s.capWithin;
+  var sol=marginOfSafety(M);
+  var verdict=pass?(withinBank?"GO":"GO \u00B7 NEEDS DEBT PAST BANK LIMIT"):"HOLD";
+  var vcolor=pass?(withinBank?"var(--green)":"#B8860B"):"var(--red)";
+  var vbg=pass?(withinBank?"var(--greenT)":"#FBF4E2"):"var(--redT)";
+  var reason;
+  if(!pass){reason=(sol.volLine!=null?("Below target at "+fv+"T \u2014 scale to ~"+Math.round(sol.volLine)+"T to clear "+tgt+"%."):("Below "+tgt+"% \u2014 cut cost per kg or lift price."));}
+  else{var bits=[];if(sol.foilLine!=null&&sol.foilLine>sol.folCur)bits.push("foil can rise Rs "+Math.round(sol.foilLine-sol.folCur));if(sol.priceLine!=null&&sol.priceCur>sol.priceLine)bits.push("price can fall Rs "+Math.round(sol.priceCur-sol.priceLine));reason="Clears target on your Rs "+nf(S.equityCap)+" Cr"+(bits.length?" \u00B7 "+bits.slice(0,2).join(", ")+" before it breaks":"")+".";}
   var html="";
-  html+='<div class="eyebrow">Return on capital \u00B7 '+fv+' T/mo</div>';
-  html+='<div style="display:flex;align-items:baseline;gap:14px;margin:12px 0 6px"><span class="heronum num" style="color:'+mc+'">'+pct(s.roiCap)+'</span><span style="font-size:17px;color:var(--ink2)">vs '+nf(S.targetROI)+'% target</span></div>';
-  html+='<div style="font-size:14.5px;color:var(--ink2);margin-bottom:30px">Investment <b>Rs '+cr(s.I)+' Cr</b> \u00B7 net profit <b>Rs '+cr(s.patEq)+' Cr</b>/yr \u00B7 margin <b>Rs '+dec(s.netKg)+'</b>/kg</div>';
+  html+='<div style="background:'+vbg+';border-radius:18px;padding:20px 22px;margin-bottom:26px"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px"><div><div style="font-size:12px;font-weight:700;letter-spacing:.1em;color:'+vcolor+'">'+verdict+'</div><div style="font-size:13.5px;color:var(--ink2);margin-top:7px;line-height:1.45">'+reason+'</div></div><div style="text-align:right;flex:0 0 auto"><div class="num" style="font-size:40px;font-weight:600;line-height:1;color:'+vcolor+'">'+pct(roe)+'</div><div style="font-size:11px;color:var(--ink3);margin-top:3px">on your Rs '+nf(S.equityCap)+' Cr</div></div></div></div>';
+  html+='<div style="font-size:14px;color:var(--ink2);margin-bottom:22px">At <b>'+fv+'T</b>: invest <b>Rs '+cr(s.I)+' Cr</b> (your Rs '+cr(s.equityUsed)+' Cr + Rs '+cr(s.debtCap)+' Cr debt) \u00B7 net profit <b>Rs '+cr(s.patEq)+' Cr</b>/yr.</div>';
   html+='<div class="eyebrow">Compare volumes \u2014 tap to focus</div>';
   html+='<div class="matrix" style="margin-top:12px">';
   html+='<div class="mh" style="background:#fff;color:var(--ink2);font-weight:600;font-size:11px;letter-spacing:.04em;text-transform:uppercase;display:flex;align-items:center;padding-left:14px;justify-content:flex-start">Per year</div>';
@@ -212,12 +246,26 @@ function viewDashboard(M){
   mrow("Sales",function(t){return{t:cr(t.salesYr)};},{sub:"Cr"});
   mrow("Net profit",function(t){return{t:cr(t.patEq),color:(t.patEq>0?"var(--ink)":"var(--red)")};},{sub:"Cr"});
   mrow("Investment",function(t){return{t:cr(t.I)};},{sub:"Cr"});
-  mrow("ROI on capital",function(t){return{t:pct(t.roiCap),color:(t.pass?"var(--green)":"var(--red)")};},{big:true,last:true});
-  mrow("ROE on your "+nf(S.equityCap)+" Cr",function(t){return{t:pct(t.roeCap),color:(t.roeCap>=nf(S.targetROI)?"var(--green)":"var(--red)")};},{big:false});
+  mrow("ROI on capital",function(t){return{t:pct(t.roiCap),color:(t.pass?"var(--green)":"var(--red)")};},{big:false});
+  mrow("ROE on your "+nf(S.equityCap)+" Cr",function(t){return{t:pct(t.roeCap),color:(t.roeCap>=tgt?"var(--green)":"var(--red)")};},{big:true,last:true});
   html+='</div>';
-  var rec;
-  if(M.threshold){var th=M.tiers.filter(function(t){return t.pass;})[0];rec='On all-equity money you cross <b>'+nf(S.targetROI)+'%</b> from <b>'+M.threshold+' tonnes/month</b>. Below that, fixed cost and the working-capital cycle hold you under target \u2014 but modest debt can still lift your equity return there. See the Report for the full funding plan.';}else{rec='No volume here clears '+nf(S.targetROI)+'% on capital. Cut conversion, lift price, shorten customer credit \u2014 or use leverage (Report tab).';}
-  html+='<div class="recap">'+rec+'</div>';
+  // margin of safety
+  html+='<div class="eyebrow" style="margin-top:30px">Margin of safety \u2014 your lines in the sand</div>';
+  html+='<div style="font-size:12.5px;color:var(--ink3);margin:6px 0 8px">How far each lever can move at '+fv+'T before ROE drops under '+tgt+'%.</div>';
+  function ms(label,line,cur,unit,higherIsRoom,fmt){
+    fmt=fmt||function(x){return Math.round(x);};
+    if(line==null){return '<div class="spine" style="border-bottom:1px solid var(--hairS)"><span class="l"><span style="color:var(--ink)">'+label+'</span></span><span style="font-size:13px;color:var(--ink3)">no limit in range</span></div>';}
+    var room=higherIsRoom?(line-cur):(cur-line);var good=room>0;
+    var roomTxt=good?("Rs/d/T".indexOf(unit)>-1? "":"" )+(unit==="Rs"?("Rs "+fmt(Math.abs(room))+" room"):(unit==="d"?(fmt(Math.abs(room))+" days room"):(fmt(Math.abs(room))+"T room"))):(unit==="Rs"?("over by Rs "+fmt(Math.abs(room))):(unit==="d"?("over by "+fmt(Math.abs(room))+"d"):("need +"+fmt(Math.abs(room))+"T")));
+    var lineTxt=(unit==="Rs"?"Rs "+fmt(line):(unit==="d"?fmt(line)+" days":fmt(line)+"T"));
+    return '<div class="spine" style="border-bottom:1px solid var(--hairS)"><span class="l"><span style="color:var(--ink)">'+label+'</span> <span style="color:var(--ink3);font-size:12.5px">'+lineTxt+'</span></span><span class="num" style="font-size:13px;font-weight:600;color:'+(good?"var(--green)":"var(--red)")+'">'+roomTxt+'</span></div>';
+  }
+  html+=ms("Volume floor",sol.volLine,sol.fv,"T",false);
+  html+=ms("Foil price ceiling",sol.foilLine,sol.folCur,"Rs",true);
+  html+=ms("Selling price floor",sol.priceLine,sol.priceCur,"Rs",false);
+  html+=ms("Customer credit ceiling",sol.debLine,sol.debCur,"d",true);
+  // cost split
+  var rmW=Math.max(0,Math.min(100,M.base.finalRM/price*100)),convW=Math.max(0,Math.min(100-rmW,s.conv/price*100)),marW=Math.max(0,100-rmW-convW);
   html+='<div class="eyebrow" style="margin-top:30px">Where each Rs '+dec(price,0)+' goes</div>';
   html+='<div class="bar"><div style="width:'+rmW+'%;background:var(--rm)"></div><div style="width:'+convW+'%;background:var(--conv)"></div><div style="width:'+marW+'%;background:'+(s.opKg>0?"var(--green)":"var(--red)")+'"></div></div>';
   html+=spine("var(--rm)","Raw material","Rs "+dec(M.base.finalRM));
@@ -354,11 +402,11 @@ function reportCost(M){
   return h;
 }
 function viewReport(M){
-  var head='<div class="noprint">'+seg([["viability","Viability"],["cost","Cost sheet"]],S.rep,"rep")+
-    '<div style="display:flex;align-items:center;gap:10px;margin-top:16px"><button class="btn" data-action="share">\u21AA Share PDF</button><button class="linkbtn" data-action="savepdf">Print</button></div></div>';
-  return head+(S.rep==="viability"?reportViability(M):reportCost(M));
+  var head='<div class="noprint">'+seg([["viability","Viability"],["cost","Cost sheet"]],S.rep,"rep")+'</div>';
+  return head+'<div class="sheet">'+(S.rep==="viability"?reportViability(M):reportCost(M))+'</div>';
 }
 
+var SHARE_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><path d="m8 8 4-4 4 4"/><path d="M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>';
 var lastViewKey="__";
 function render(){
   var M=compute();
@@ -366,7 +414,8 @@ function render(){
   var tabs=seg([["dashboard","ROI"],["inputs","Enter data"],["report","Report"]],S.tab,"tab");
   var body=S.tab==="dashboard"?viewDashboard(M):(S.tab==="inputs"?viewInputs(M):viewReport(M));
   var top='<div class="topbar noprint"><div class="brand"><span class="mono">AA</span><span class="word">Alu-Alu</span></div><span class="meta">'+today()+'</span></div>';
-  document.getElementById("app").innerHTML='<div class="wrap">'+top+'<div class="noprint">'+tabs+'</div><div class="view'+anim+'" style="margin-top:'+(S.tab==="report"?22:34)+'px">'+body+'</div></div>';
+  var bar=(S.tab==="report")?'<div class="actionbar noprint"><div class="abinner"><button class="share-btn" data-action="share">'+SHARE_SVG+'<span>Share as PDF</span></button><button class="print-btn" data-action="savepdf">Print</button></div></div>':'';
+  document.getElementById("app").innerHTML='<div class="wrap">'+top+'<div class="noprint">'+tabs+'</div><div class="view'+anim+'" style="margin-top:'+(S.tab==="report"?20:34)+'px">'+body+'</div></div>'+bar;
   save();
 }
 
@@ -493,11 +542,133 @@ function buildPDF(M){
   return new Blob([bytes],{type:"application/pdf"});
 }
 
+function buildCostPDF(M){
+  var b=M.base, price=nf(S.price);
+  var INK="#1D1D1F",INK2="#6E6E73",INK3="#9A9AA0",GREEN="#0E7C57",HAIR="#D6D6DA",HAIRS="#E8E8EC",BAND="#F2F2F4",GT="#EEF6F1",ROWALT="#F7F8FA",WHITE="#FFFFFF",BLACK="#1A1A1A";
+  var H=842, s="";
+  function hx(h){h=h.replace("#","");return (parseInt(h.substr(0,2),16)/255).toFixed(3)+" "+(parseInt(h.substr(2,2),16)/255).toFixed(3)+" "+(parseInt(h.substr(4,2),16)/255).toFixed(3);}
+  function san(t){return String(t).replace(/[\u2012\u2013\u2014\u2015\u2212]/g,"-").replace(/\u00B7/g,"-").replace(/\u00D7/g,"x").replace(/\u00B5/g,"u").replace(/\u00B2/g,"2").replace(/\u00B3/g,"3").replace(/\u2248/g,"~").replace(/\u20B9/g,"Rs ").replace(/[^\x20-\x7e]/g,"");}
+  function escp(t){return san(t).replace(/\\/g,"\\\\").replace(/\(/g,"\\(").replace(/\)/g,"\\)");}
+  function tw(str,size){str=san(str);var w=0;for(var i=0;i<str.length;i++){var c=str[i],u;if(c>='0'&&c<='9')u=.556;else if(c==='.'||c===','||c===' '||c===':'||c==="'"||c==='/')u=.278;else if(c==='%')u=.889;else if(c==='-'||c==='(' ||c===')')u=.333;else if(c===c.toUpperCase()&&c!==c.toLowerCase())u=.68;else u=.5;w+=u;}return w*size;}
+  function rect(x,y,w,h,f){s+=hx(f)+" rg "+x.toFixed(2)+" "+(H-y-h).toFixed(2)+" "+w.toFixed(2)+" "+h.toFixed(2)+" re f\n";}
+  function box(x,y,w,h,st,lw){s+=hx(st)+" RG "+(lw||0.8).toFixed(2)+" w "+x.toFixed(2)+" "+(H-y-h).toFixed(2)+" "+w.toFixed(2)+" "+h.toFixed(2)+" re S\n";}
+  function line(x1,y1,x2,y2,st,lw){s+=hx(st)+" RG "+(lw||0.6).toFixed(2)+" w "+x1.toFixed(2)+" "+(H-y1).toFixed(2)+" m "+x2.toFixed(2)+" "+(H-y2).toFixed(2)+" l S\n";}
+  function txt(x,y,t,size,bold,fill){s+="BT /F"+(bold?2:1)+" "+size+" Tf "+hx(fill||INK)+" rg "+x.toFixed(2)+" "+(H-y).toFixed(2)+" Td ("+escp(t)+") Tj ET\n";}
+  function ctr(cx,y,t,size,bold,fill){txt(cx-tw(t,size)/2,y,t,size,bold,fill);}
+  function rt(xr,y,t,size,bold,fill){txt(xr-tw(t,size),y,t,size,bold,fill);}
+  function wrap(t,n){t=san(t);var w=t.split(" "),o=[],c="";for(var i=0;i<w.length;i++){if((c+" "+w[i]).trim().length>n){o.push(c.trim());c=w[i];}else{c=(c+" "+w[i]).trim();}}if(c)o.push(c.trim());return o;}
+
+  // TITLE
+  ctr(297,66,"ALU-ALU RAW MATERIAL COST REPORT",19,true,INK);
+  ctr(297,84,"EXECUTIVE SUMMARY   -   REVISION "+S.revision,9.5,true,INK3);
+  line(40,98,555,98,INK,2.2);
+
+  // KPI BOXES
+  var totalGSM=b.yieldKg*1000;
+  var kpis=[["SELLING PRICE","Rs "+dec(price,2),"Rs/kg"],["FINAL RM COST","Rs "+dec(b.finalRM,2),"Rs/kg Consumed"],["BASE COST (M2)","Rs "+dec(b.baseCostM2,2),dec(b.yieldKg,5)+" kg Yield"],["IDEAL COST (KG)","Rs "+dec(b.idealCostKg,2),"100% Efficiency"],["STD WASTAGE","Rs "+dec(b.wasteRs,2),"+"+dec(nf(S.wastage),2)+"% Loss"],["GROSS MARGIN",pct(b.rmMargin/price*100,2),"Rs "+dec(b.rmMargin,2)+"/kg"]];
+  var kx=40,kw=80,kg=7,ky=112,kh=72;
+  kpis.forEach(function(k,i){
+    var x=kx+i*(kw+kg);
+    rect(x,ky,kw,kh,GT); box(x,ky,kw,kh,HAIR,0.8);
+    ctr(x+kw/2,ky+16,k[0],6.4,true,INK2);
+    ctr(x+kw/2,ky+40,k[1],12.5,true,INK);
+    var subs=wrap(k[2],15);ctr(x+kw/2,ky+56,subs[0],6,false,INK3);if(subs[1])ctr(x+kw/2,ky+64,subs[1],6,false,INK3);
+  });
+
+  // SECTION 1
+  var y=ky+kh+24;
+  rect(40,y,515,20,BLACK);txt(48,y+14,"1.  MATERIAL CONTRIBUTION & COST BREAKDOWN",11,true,WHITE);
+  y+=20;
+  var cE=[40,250,330,405,480,555], cGsm=290, cRate=367, cM2=442, cKg=517;
+  rect(40,y,515,22,BAND);
+  txt(48,y+14,"MATERIAL SPECIFICATION",7.5,true,INK2);
+  ctr(cGsm,y+14,"GSM",7.5,true,INK2);ctr(cRate,y+14,"RATE (RS)",7.5,true,INK2);ctr(cM2,y+14,"COST (RS/M2)",7.5,true,INK2);ctr(cKg,y+14,"COST (RS/KG)",7.5,true,INK2);
+  y+=22;
+  var mats=b.subsK.map(function(v){return {name:v.name,spec:dec(v.thickness,0)+" um ("+dec(v.density,2)+" g/cm3)",gsm:v.gsm,rate:dec(v.rate,2),m2:v.costM2,kg:v.costKg};});
+  mats.push({name:"Adhesive",spec:"Calculated via "+nf(S.adh.wetMixPerTonne)+"kg mix/Tonne",gsm:nf(S.adh.gsm),rate:"-",m2:b.adh.adhCostM2,kg:b.adh.adhCostKg});
+  var rh=34;
+  mats.forEach(function(m,idx){
+    if(idx%2===1)rect(40,y,515,rh,ROWALT);
+    txt(48,y+14,m.name,9,true,INK);
+    txt(48,y+26,m.spec,7.5,false,INK3);
+    ctr(cGsm,y+13,dec(m.gsm,2),9,false,INK);ctr(cGsm,y+25,"("+dec(m.gsm/totalGSM*100,2)+"%)",7,false,INK3);
+    ctr(cRate,y+18,m.rate==="-"?"-":m.rate,9,false,INK);
+    ctr(cM2,y+18,dec(m.m2,2),9,false,INK);
+    ctr(cKg,y+13,dec(m.kg,2),9,true,INK);ctr(cKg,y+25,"("+dec(m.kg/b.idealCostKg*100,2)+"%)",7,false,INK3);
+    line(40,y+rh,555,y+rh,HAIRS,0.5);
+    y+=rh;
+  });
+  rect(40,y,515,30,BAND);
+  txt(48,y+19,"Total Output Yield & Base Cost",9,true,INK);
+  ctr(cGsm,y+15,dec(totalGSM,2),9,true,INK);ctr(cGsm,y+26,"(100.00%)",7,false,INK3);
+  ctr(cM2,y+19,"Rs "+dec(b.baseCostM2,2),9,true,INK);
+  ctr(cKg,y+15,"Rs "+dec(b.idealCostKg,2),9,true,INK);ctr(cKg,y+26,"(100.00%)",7,false,INK3);
+  box(40,ky+kh+44,515,(y+30)-(ky+kh+44),HAIR,0.8);
+  [cE[1],cE[2],cE[3],cE[4]].forEach(function(xx){line(xx,ky+kh+44,xx,y+30,HAIRS,0.5);});
+  y+=30;
+
+  // SECTION 2
+  y+=22;
+  var parts=S.adh.comps.map(function(c){return nf(c.parts);});
+  var ratio=parts.join(":"); var batch=parts.reduce(function(a,x){return a+x;},0);
+  rect(40,y,515,20,BLACK);txt(48,y+14,"2.  ADHESIVE FORMULATION ("+ratio+")",11,true,WHITE);
+  y+=20;
+  // note box
+  rect(40,y+8,515,52,GT);rect(40,y+8,3,52,GREEN);
+  var notes=[["Mixing Ratio: ",ratio+" equates to a total batch size of "+batch+" kg of wet mixture."],["Consumption Metric: ","Exactly "+nf(S.adh.wetMixPerTonne)+" kg of wet mixture produces 1 Tonne (1,000 kg) of finished output."],["Equivalent Impact: ","Dry GSM applied to the foil structure is ~"+dec(nf(S.adh.gsm),2)+" GSM."]];
+  var ny=y+22;
+  notes.forEach(function(nn){txt(52,ny,nn[0],8.5,true,INK);txt(52+tw(nn[0],9.7)+2,ny,nn[1],8.5,false,INK2);ny+=14;});
+  y+=72;
+  // component table
+  var dC1=48,dMix=300,dRate=410,dTot=545;
+  rect(40,y,515,22,BAND);
+  txt(dC1,y+14,"COMPONENT",7.5,true,INK2);ctr(dMix,y+14,"MIX (KG)",7.5,true,INK2);ctr(dRate,y+14,"RATE (RS/KG)",7.5,true,INK2);rt(dTot,y+14,"TOTAL COST (RS)",7.5,true,INK2);
+  y+=22;
+  var totCost=0;
+  S.adh.comps.forEach(function(c,idx){
+    var rate=subRate(c),tot=nf(c.parts)*rate;totCost+=tot;
+    if(idx%2===1)rect(40,y,515,22,ROWALT);
+    txt(dC1,y+14,c.name,9,false,INK);ctr(dMix,y+14,dec(nf(c.parts),0),9,false,INK);ctr(dRate,y+14,dec(rate,0),9,false,INK);rt(dTot,y+14,inr(tot),9,false,INK);
+    line(40,y+22,555,y+22,HAIRS,0.5);y+=22;
+  });
+  rect(40,y,515,24,BAND);
+  txt(dC1,y+15,"Batch Total (Wet Mixture)",9,true,INK);ctr(dMix,y+15,dec(batch,0),9,true,INK);ctr(dRate,y+15,dec(batch?totCost/batch:0,2)+" (Avg)",9,true,INK);rt(dTot,y+15,inr(totCost),9,true,INK);
+  y+=24;
+
+  txt(40,828,"Alu-Alu Command  -  cost sheet  -  generated "+today(),8,false,INK3);
+
+  var objs=[];
+  objs[1]="<< /Type /Catalog /Pages 2 0 R >>";
+  objs[2]="<< /Type /Pages /Kids [3 0 R] /Count 1 >>";
+  objs[3]="<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 4 0 R >>";
+  objs[4]="<< /Length "+s.length+" >>\nstream\n"+s+"endstream";
+  objs[5]="<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
+  objs[6]="<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>";
+  var pdf="%PDF-1.4\n%\u00e2\u00e3\u00cf\u00d3\n",off=[];
+  for(var i2=1;i2<=6;i2++){off[i2]=pdf.length;pdf+=i2+" 0 obj\n"+objs[i2]+"\nendobj\n";}
+  var xp=pdf.length;pdf+="xref\n0 7\n0000000000 65535 f \n";
+  for(var j=1;j<=6;j++){pdf+=("0000000000"+off[j]).slice(-10)+" 00000 n \n";}
+  pdf+="trailer\n<< /Size 7 /Root 1 0 R >>\nstartxref\n"+xp+"\n%%EOF";
+  var bytes=new Uint8Array(pdf.length);for(var k=0;k<pdf.length;k++){bytes[k]=pdf.charCodeAt(k)&0xff;}
+  return new Blob([bytes],{type:"application/pdf"});
+}
+
 function sharePDF(){
-  var blob=buildPDF(compute());
-  var file=null;try{file=new File([blob],"AluAlu-Viability.pdf",{type:"application/pdf"});}catch(e){}
-  if(file&&navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:"Alu-Alu Viability"}).catch(function(){});}
-  else{var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="AluAlu-Viability.pdf";document.body.appendChild(a);a.click();a.remove();}
+  var isCost=(S.rep==="cost");
+  var blob=isCost?buildCostPDF(compute()):buildPDF(compute());
+  var fname=isCost?"AluAlu-CostSheet.pdf":"AluAlu-Viability.pdf";
+  var title="Alu-Alu "+(isCost?"Cost Sheet":"Viability");
+  function dl(){try{var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=fname;document.body.appendChild(a);a.click();setTimeout(function(){try{a.remove();}catch(_){}} ,150);}catch(_){}}
+  var file=null;try{file=new File([blob],fname,{type:"application/pdf"});}catch(e){}
+  // Try the native share sheet directly (WhatsApp / Mail with the PDF attached).
+  if(file&&navigator.share){
+    try{
+      var pr=navigator.share({files:[file],title:title});
+      if(pr&&pr.then){pr.then(function(){},function(err){if(!err||err.name!=="AbortError"){dl();}});}
+      return;
+    }catch(e2){}
+  }
+  dl();
 }
 
 document.addEventListener("input",function(e){
