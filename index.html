@@ -10,6 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="theme-color" content="#FFFFFF" />
 <link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icon-192.png" />
 <style>
   :root{
     --ink:#1D1D1F;--ink2:#6E6E73;--ink3:#A1A1A6;--hair:#E3E3E6;--hairS:#EDEDEF;
@@ -369,6 +370,16 @@ render();
 
 /* register service worker for offline + clean install (silently ignored on local file://) */
 if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}
+</script>
+<button id="installbtn" type="button">↓ Install app</button>
+<style>#installbtn{display:none;position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:50;font-family:-apple-system,system-ui,sans-serif;font-size:14px;font-weight:600;color:#fff;background:#0E7C57;border:none;border-radius:980px;padding:11px 22px;box-shadow:0 4px 14px rgba(0,0,0,.18);cursor:pointer}</style>
+<script>
+(function(){
+  var dp=null, b=document.getElementById("installbtn");
+  window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();dp=e;if(b){b.style.display="block";}});
+  if(b){b.addEventListener("click",function(){if(dp){dp.prompt();dp.userChoice.then(function(){dp=null;b.style.display="none";});}});}
+  window.addEventListener("appinstalled",function(){if(b){b.style.display="none";}});
+})();
 </script>
 </body>
 </html>
