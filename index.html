@@ -74,6 +74,15 @@
   .delx{flex:0 0 auto;width:24px;height:24px;border:none;background:none;color:var(--ink3);font-size:18px;cursor:pointer;line-height:1}
   .addv{width:100%;text-align:left;padding:12px 16px;background:none;border:none;border-top:1px solid var(--hair);color:var(--green);font:inherit;font-size:14px;font-weight:500;cursor:pointer}
   .selbadge{display:inline-flex;align-items:center;gap:6px;background:var(--greenT);color:var(--green);border-radius:980px;padding:3px 10px;font-size:12px;font-weight:600;margin-top:6px}
+
+  @keyframes enter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+  .view.enter{animation:enter .30s cubic-bezier(.22,.61,.36,1) both}
+  .seg button,.pill,.btn,.nav,.mh,.seldot,.addv,.delx,.linkbtn{transition:transform .12s ease,background .16s ease,color .16s ease,box-shadow .16s ease,border-color .16s ease}
+  .pill:active,.btn:active,.mh:active,.seldot:active,.addv:active,.linkbtn:active{transform:scale(.96)}
+  .nav:active{background:var(--hairS)}
+  .vrow{transition:background .2s ease}
+  .vrow.sel{background:var(--sel)}
+  .group{transition:box-shadow .2s ease}
   /* report */
   #pr .ttl{font-size:23px;font-weight:600;letter-spacing:-.02em}
   #pr .sub{font-size:12px;color:var(--ink3);margin-top:3px}
@@ -172,7 +181,7 @@ function spine(color,label,v,strong){return '<div class="spine"><span class="l">
 function vendorBlock(matref,bindp,mat){
   var h="";
   mat.vendors.forEach(function(v,vi){
-    h+='<div class="vrow">'+
+    h+='<div class="vrow'+(vi===mat.sel?' sel':'')+'">'+
       '<button class="seldot'+(vi===mat.sel?" on":"")+'" data-action="selv" data-mat="'+matref+'" data-i="'+vi+'"></button>'+
       '<input class="vname" type="text" data-bind="'+bindp+'.'+vi+'.name" value="'+ea(v.name)+'" placeholder="Vendor name">'+
       '<span class="fld vrate"><span class="aff">Rs</span><input type="text" inputmode="decimal" data-bind="'+bindp+'.'+vi+'.rate" value="'+ea(v.rate)+'" style="width:64px"></span>'+
@@ -253,13 +262,13 @@ function viewInputs(M){
   }
   if(S.screen==="capital"){var ar2="";S.assets.forEach(function(a,i){ar2+=row(a.name,field("asset."+i,a.amt,{prefix:"Rs",w:130}));});return back+'<h2>Capital & assets</h2>'+card("Fixed assets / investment","Total Rs "+inr(M.base.fixedAssets)+" \u00B7 negotiate any line",ar2)+'<div class="hint">Working capital of Rs '+cr(s.wc)+' Cr sits on top, so own money needed at '+nf(S.volume)+'T is Rs '+cr(s.capReq)+' Cr.</div>';}
   if(S.screen==="wc"){return back+'<h2>Working capital</h2>'+card("Operating cycle \u2014 days","Net working capital at "+nf(S.volume)+"T: Rs "+cr(s.wc)+" Cr",row("Raw material stock",field("rmDays",S.rmDays,{suffix:"days",w:70}))+row("Finished goods stock",field("fgDays",S.fgDays,{suffix:"days",w:70}))+row("Credit to customers",field("debDays",S.debDays,{suffix:"days",w:70}))+row("Credit from suppliers",field("credDays",S.credDays,{suffix:"days",w:70})))+card("Build-up at "+nf(S.volume)+"T",null,row("RM stock \u00B7 "+nf(S.rmDays)+"d",'<span class="num" style="font-size:15px">Rs '+cr(s.rmInv)+' Cr</span>')+row("Finished goods \u00B7 "+nf(S.fgDays)+"d",'<span class="num" style="font-size:15px">Rs '+cr(s.fgInv)+' Cr</span>')+row("Debtors \u00B7 "+nf(S.debDays)+"d",'<span class="num" style="font-size:15px">Rs '+cr(s.recv)+' Cr</span>')+row("less Creditors \u00B7 "+nf(S.credDays)+"d",'<span class="num" style="font-size:15px;color:var(--green)">\u2212 Rs '+cr(s.pay)+' Cr</span>')+row("Net working capital",'<span class="num" style="font-size:16px;font-weight:600">Rs '+cr(s.wc)+' Cr</span>'))+'<div class="hint">Debtors are valued at selling price; stretching supplier credit is the cheapest working capital.</div>';}
-  if(S.screen==="targets"){return back+'<h2>Targets & tax</h2>'+card(null,null,row("Target ROI",field("targetROI",S.targetROI,{suffix:"%",w:60}))+row("Tax rate",field("tax",S.tax,{suffix:"%",w:60})))+'<div class="hint">Tax 0% shows pre-tax return.</div>';}
+  if(S.screen==="targets"){return back+'<h2>Targets & tax</h2>'+card(null,null,row("Target ROI",field("targetROI",S.targetROI,{suffix:"%",w:60}))+row("Tax rate",field("tax",S.tax,{suffix:"%",w:60})))+'<div class="hint">Tax 0% shows pre-tax return. Everything you enter saves automatically on this device.</div><div style="margin-top:22px"><button class="linkbtn" data-action="reset" style="color:var(--red)">Reset all data</button></div>';}
   return "";
 }
 
 function viewReport(M){
   var head='<div class="noprint">'+seg([["viability","Viability"],["cost","Cost sheet"]],S.rep,"rep")+
-    '<div style="display:flex;align-items:center;gap:10px;margin-top:16px"><button class="btn" data-action="share">\u21AA Share</button><button class="linkbtn" data-action="saveimg">Save image</button><button class="linkbtn" data-action="savepdf">Save PDF</button></div></div>';
+    '<div style="display:flex;align-items:center;gap:10px;margin-top:16px"><button class="btn" data-action="share">\u21AA Share PDF</button><button class="linkbtn" data-action="saveimg">Save image</button><button class="linkbtn" data-action="savepdf">Print</button></div></div>';
   return head+(S.rep==="viability"?reportViability(M):reportCost(M));
 }
 function reportViability(M){
@@ -287,12 +296,15 @@ function reportCost(M){
   return h;
 }
 
+var lastViewKey="__";
 function render(){
   var M=compute();
+  var viewKey=S.tab+'|'+S.screen+'|'+S.rep;var anim=(viewKey!==lastViewKey)?' enter':'';lastViewKey=viewKey;
   var tabs=seg([["dashboard","ROI"],["inputs","Enter data"],["report","Report"]],S.tab,"tab");
   var body=S.tab==="dashboard"?viewDashboard(M):(S.tab==="inputs"?viewInputs(M):viewReport(M));
   var top='<div class="topbar noprint"><div class="brand"><span class="mono">AA</span><span class="word">Alu-Alu</span></div><span class="meta">'+today()+'</span></div>';
-  document.getElementById("app").innerHTML='<div class="wrap">'+top+'<div class="noprint">'+tabs+'</div><div style="margin-top:'+(S.tab==="report"?22:34)+'px">'+body+'</div></div>';
+  document.getElementById("app").innerHTML='<div class="wrap">'+top+'<div class="noprint">'+tabs+'</div><div class="view'+anim+'" style="margin-top:'+(S.tab==="report"?22:34)+'px">'+body+'</div></div>';
+  save();
 }
 
 function setByPath(p,v){
@@ -360,29 +372,118 @@ function saveImage(){
   },"image/png");
 }
 
+
+function save(){try{localStorage.setItem("alualu_state_v1",JSON.stringify(S));}catch(e){}}
+function load(){try{var raw=localStorage.getItem("alualu_state_v1");if(raw){var o=JSON.parse(raw);for(var k in o){if(Object.prototype.hasOwnProperty.call(o,k))S[k]=o[k];}}}catch(e){}}
+
+function buildPDF(M){
+  var s=M.sel,base=M.base,price=nf(S.price);
+  var INK="#1D1D1F",INK2="#6E6E73",INK3="#A1A1A6",GREEN="#0E7C57",RED="#C5304A",GT="#E7F3EE",RT="#FBEDEF",SURF="#F2F2F4",WHITE="#FFFFFF",HAIR="#D8D8DC",HAIRS="#ECECEE";
+  var H=842,cs="";
+  function hx(h){h=h.replace("#","");return (parseInt(h.substr(0,2),16)/255).toFixed(3)+" "+(parseInt(h.substr(2,2),16)/255).toFixed(3)+" "+(parseInt(h.substr(4,2),16)/255).toFixed(3);}
+  function san(t){return String(t).replace(/[\u2012\u2013\u2014\u2015\u2212]/g,"-").replace(/\u00B7/g,"-").replace(/\u00D7/g,"x").replace(/\u2192/g,"->").replace(/[^\x20-\x7e]/g,"");}
+  function esc(t){return san(t).replace(/\\/g,"\\\\").replace(/\(/g,"\\(").replace(/\)/g,"\\)");}
+  function rect(x,y,w,h,fill){cs+=hx(fill)+" rg "+x.toFixed(2)+" "+(H-y-h).toFixed(2)+" "+w.toFixed(2)+" "+h.toFixed(2)+" re f\n";}
+  function line(x1,y1,x2,y2,strk,w){cs+=hx(strk)+" RG "+(w||1).toFixed(2)+" w "+x1.toFixed(2)+" "+(H-y1).toFixed(2)+" m "+x2.toFixed(2)+" "+(H-y2).toFixed(2)+" l S\n";}
+  function txt(x,y,t,size,bold,fill){cs+="BT /F"+(bold?2:1)+" "+size+" Tf "+hx(fill||INK)+" rg "+x.toFixed(2)+" "+(H-y).toFixed(2)+" Td ("+esc(t)+") Tj ET\n";}
+  function wrap(t,n){t=san(t);var w=t.split(" "),out=[],cur="";for(var i=0;i<w.length;i++){if((cur+" "+w[i]).trim().length>n){out.push(cur.trim());cur=w[i];}else{cur=(cur+" "+w[i]).trim();}}if(cur)out.push(cur.trim());return out;}
+
+  rect(50,52,30,30,GREEN);txt(56,74,"AA",13,true,WHITE);
+  txt(92,68,"Alu-Alu Command",17,true,INK);
+  txt(92,84,"Cost & ROI sheet  -  "+today(),10,false,INK2);
+  txt(458,68,"Revision "+S.revision,10,false,INK3);
+  line(50,104,545,104,HAIR,1);
+
+  var ty=120,th=94,tw=240;
+  rect(50,ty,tw,th,s.pass?GT:RT);
+  txt(64,ty+22,"ROI ON OWN MONEY",9,true,s.pass?GREEN:RED);
+  txt(62,ty+58,pct(s.roi),30,true,s.pass?GREEN:RED);
+  txt(64,ty+80,(s.pass?"clears ":"below ")+nf(S.targetROI)+"% target  -  "+nf(S.volume)+" T/mo",9.5,false,INK2);
+  rect(305,ty,tw,th,SURF);
+  txt(319,ty+22,"OWN MONEY TO DEPLOY",9,true,INK3);
+  txt(317,ty+58,"Rs "+cr(s.capReq),30,true,INK);
+  txt(319,ty+80,"Cr  -  incl Rs "+cr(s.wc)+" Cr working capital",9.5,false,INK2);
+
+  var y=ty+th+36;
+  function head(t){txt(50,y,t,10,true,INK3);y+=20;}
+  function lv(label,val,bold,color){txt(50,y,label,11,false,bold?INK:INK2);txt(360,y,val,11,bold,color||INK);line(50,y+9,545,y+9,HAIRS,0.6);y+=23;}
+  head("ECONOMICS  (Rs per kg)");
+  lv("Selling price","Rs "+dec(price));
+  lv("Raw material consumed","Rs "+dec(base.finalRM));
+  lv("Conversion","Rs "+dec(s.conv));
+  lv("Net margin","Rs "+dec(s.netKg),true,s.opKg>0?GREEN:RED);
+  lv("Net profit per year","Rs "+cr(s.pat)+" Cr",true,s.pass?GREEN:RED);
+  y+=12;
+  head("SELECTED VENDORS");
+  base.subsK.forEach(function(v){lv(v.name+"  ("+v.vendor+")","Rs "+dec(v.rate,0)+"/kg");});
+  lv("Adhesive (blended)","Rs "+dec(base.adh.avgRate,0)+"/kg");
+  y+=12;
+  head("CAPITAL AT "+nf(S.volume)+"T");
+  lv("Fixed investment","Rs "+cr(base.fixedAssets)+" Cr");
+  lv("Working capital","Rs "+cr(s.wc)+" Cr");
+  lv("Own money needed","Rs "+cr(s.capReq)+" Cr",true);
+  y+=14;
+  head("RECOMMENDATION");
+  var rec;
+  if(M.threshold){rec="Funded entirely from your own money, the project clears your "+nf(S.targetROI)+"% target from "+M.threshold+" tonnes per month. At the "+nf(S.volume)+"T focus you deploy Rs "+cr(s.capReq)+" Cr and earn "+pct(s.roi)+". You can keep investing your own funds up to Rs "+cr(s.maxOwn)+" Cr at this volume before the return falls under "+nf(S.targetROI)+"%. ROI rises with scale as fixed cost dilutes, so the lever is selling more tonnes and negotiating the machine and credit terms down.";}
+  else{rec="At current costs no volume clears "+nf(S.targetROI)+"% on own funds. Lift price, cut conversion cost, or shorten the customer credit period before committing capital.";}
+  wrap(rec,94).forEach(function(ln){txt(50,y,ln,10.5,false,INK);y+=15;});
+
+  line(50,812,545,812,HAIRS,0.6);
+  txt(50,826,"Generated by Alu-Alu Command  -  "+today(),9,false,INK3);
+
+  var objs=[];
+  objs[1]="<< /Type /Catalog /Pages 2 0 R >>";
+  objs[2]="<< /Type /Pages /Kids [3 0 R] /Count 1 >>";
+  objs[3]="<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 4 0 R >>";
+  objs[4]="<< /Length "+cs.length+" >>\nstream\n"+cs+"endstream";
+  objs[5]="<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
+  objs[6]="<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>";
+  var pdf="%PDF-1.4\n%\u00e2\u00e3\u00cf\u00d3\n",off=[];
+  for(var i=1;i<=6;i++){off[i]=pdf.length;pdf+=i+" 0 obj\n"+objs[i]+"\nendobj\n";}
+  var xp=pdf.length;
+  pdf+="xref\n0 7\n0000000000 65535 f \n";
+  for(var j=1;j<=6;j++){pdf+=("0000000000"+off[j]).slice(-10)+" 00000 n \n";}
+  pdf+="trailer\n<< /Size 7 /Root 1 0 R >>\nstartxref\n"+xp+"\n%%EOF";
+  var bytes=new Uint8Array(pdf.length);for(var k=0;k<pdf.length;k++){bytes[k]=pdf.charCodeAt(k)&0xff;}
+  return new Blob([bytes],{type:"application/pdf"});
+}
+function sharePDF(){
+  var blob=buildPDF(compute());
+  var file=null;try{file=new File([blob],"AluAlu-Cost-ROI.pdf",{type:"application/pdf"});}catch(e){}
+  if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+    navigator.share({files:[file],title:"Alu-Alu Cost & ROI"}).catch(function(){});
+  }else{
+    var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="AluAlu-Cost-ROI.pdf";document.body.appendChild(a);a.click();a.remove();
+  }
+}
+
 document.addEventListener("input",function(e){
   var el=e.target;if(!el.dataset||!el.dataset.bind)return;
   var id=el.dataset.bind,caret=null;try{caret=el.selectionStart;}catch(_){}
+  var sy=(window.scrollY||0);
   setByPath(id,el.value);render();
+  window.scrollTo(0,sy);
   var again=document.querySelector('[data-bind="'+id.replace(/"/g,'\\"')+'"]');
   if(again){again.focus();if(caret!=null){try{again.setSelectionRange(caret,caret);}catch(_){}}}
 });
 document.addEventListener("click",function(e){
   var el=e.target.closest("[data-action]");if(!el)return;
-  var a=el.dataset.action,v=el.dataset.v;
+  var a=el.dataset.action,v=el.dataset.v;var sy=(window.scrollY||0);
   if(a==="tab"){S.tab=v;S.screen=null;render();}
   else if(a==="screen"){S.screen=(v===""?null:v);render();}
-  else if(a==="vol"){S.volume=parseFloat(v);render();}
+  else if(a==="vol"){S.volume=parseFloat(v);render();if(S.tab!=="dashboard"){window.scrollTo(0,sy);}return;}
   else if(a==="rep"){S.rep=v;render();}
   else if(a==="savepdf"){window.print();}
-  else if(a==="share"){doShare();}
+  else if(a==="share"){sharePDF();}
+  else if(a==="reset"){if(confirm("Reset all data to defaults? This cannot be undone.")){try{localStorage.removeItem("alualu_state_v1");}catch(e){}location.reload();}}
   else if(a==="saveimg"){saveImage();}
-  else if(a==="selv"){matObj(el.dataset.mat).sel=parseInt(el.dataset.i,10);render();}
-  else if(a==="addv"){var m=matObj(el.dataset.mat);m.vendors.push({name:"New vendor",rate:String(nf(m.vendors[m.sel].rate))});render();}
-  else if(a==="delv"){var m2=matObj(el.dataset.mat),di=parseInt(el.dataset.i,10);if(m2.vendors.length>1){m2.vendors.splice(di,1);if(m2.sel>=m2.vendors.length)m2.sel=m2.vendors.length-1;else if(di<m2.sel)m2.sel--;}render();}
+  else if(a==="selv"){matObj(el.dataset.mat).sel=parseInt(el.dataset.i,10);render();window.scrollTo(0,sy);return;}
+  else if(a==="addv"){var m=matObj(el.dataset.mat);m.vendors.push({name:"New vendor",rate:String(nf(m.vendors[m.sel].rate))});render();window.scrollTo(0,sy);return;}
+  else if(a==="delv"){var m2=matObj(el.dataset.mat),di=parseInt(el.dataset.i,10);if(m2.vendors.length>1){m2.vendors.splice(di,1);if(m2.sel>=m2.vendors.length)m2.sel=m2.vendors.length-1;else if(di<m2.sel)m2.sel--;}render();window.scrollTo(0,sy);return;}
 });
 
-render();
+load();render();
 
 if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}
 </script>
