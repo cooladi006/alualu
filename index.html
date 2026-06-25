@@ -171,7 +171,7 @@ function compute(){
     else if(denom<=0||ebit<=r*I){leverOK=false;}
     else{Etar=(1-t)*(ebit-r*I)/denom;if(Etar<0){leverOK=false;Etar=null;}else if(Etar>I){Etar=I;Dtar=0;DEtar=0;}else{Dtar=I-Etar;DEtar=Etar?Dtar/Etar:0;}}
     var equityUsed=Math.min(Ecap,I),debtCap=Math.max(0,I-Ecap),interestCap=debtCap*r,patCap=(ebit-interestCap)*(1-t),roeCap=equityUsed?patCap/equityUsed*100:0,deCap=equityUsed?debtCap/equityUsed:0,capWithin=deCap<=maxDE+1e-9;
-    return{vol:vol,kgYr:kgYr,conv:conv,salesYr:salesYr,rmYr:rmYr,fixedYr:fixedYr,varYr:varYr,ebit:ebit,patEq:patEq,netKg:netKg,opKg:price-finalRM-conv,rmInv:rmInv,fgInv:fgInv,recv:recv,pay:pay,wc:wc,I:I,roiCap:roiCap,pass:pass,Etar:Etar,Dtar:Dtar,DEtar:DEtar,leverOK:leverOK,equityUsed:equityUsed,debtCap:debtCap,roeCap:roeCap,deCap:deCap,capWithin:capWithin};
+    return{vol:vol,kgYr:kgYr,conv:conv,salesYr:salesYr,rmYr:rmYr,fixedYr:fixedYr,varYr:varYr,ebit:ebit,patEq:patEq,netKg:netKg,opKg:price-finalRM-conv,rmInv:rmInv,fgInv:fgInv,recv:recv,pay:pay,wc:wc,I:I,roiCap:roiCap,pass:pass,Etar:Etar,Dtar:Dtar,DEtar:DEtar,leverOK:leverOK,equityUsed:equityUsed,debtCap:debtCap,interestCap:interestCap,patCap:patCap,roeCap:roeCap,deCap:deCap,capWithin:capWithin};
   }
   var tiers=S.cols.map(ct),sel=tiers[S.focus];
   var passing=tiers.filter(function(t){return t.pass;});
@@ -229,6 +229,7 @@ function viewDashboard(M){
   var s=M.sel,price=nf(S.price),fv=focusVol(),tgt=nf(S.targetROI);
   var roe=s.roeCap,pass=roe>=tgt,withinBank=s.capWithin;
   var sol=marginOfSafety(M);
+  var BE=breakeven(M),CL=controlLimits(M);
   var verdict=pass?(withinBank?"GO":"GO \u00B7 NEEDS DEBT PAST BANK LIMIT"):"HOLD";
   var vcolor=pass?(withinBank?"var(--green)":"#B8860B"):"var(--red)";
   var vbg=pass?(withinBank?"var(--greenT)":"#FBF4E2"):"var(--redT)";
@@ -248,6 +249,28 @@ function viewDashboard(M){
   mrow("Investment",function(t){return{t:cr(t.I)};},{sub:"Cr"});
   mrow("ROI on capital",function(t){return{t:pct(t.roiCap),color:(t.pass?"var(--green)":"var(--red)")};},{big:false});
   mrow("ROE on your "+nf(S.equityCap)+" Cr",function(t){return{t:pct(t.roeCap),color:(t.roeCap>=tgt?"var(--green)":"var(--red)")};},{big:true,last:true});
+  html+='</div>';
+  // ---- break-even (live) ----
+  html+='<div class="eyebrow" style="margin-top:30px">Break-even \u2014 the floor you must clear every month</div>';
+  html+='<div style="font-size:12.5px;color:var(--ink3);margin:6px 0 10px">At Rs '+dec(BE.price,0)+'/kg, contribution is Rs '+dec(BE.contrib,0)+'/kg after RM &amp; variable cost.</div>';
+  html+='<div style="border:1px solid var(--hair);border-radius:16px;overflow:hidden">';
+  html+='<div style="display:grid;grid-template-columns:1fr 1fr">';
+  html+='<div style="padding:15px 16px;border-right:1px solid var(--hairS)"><div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);font-weight:600">Break-even volume</div><div class="num" style="font-size:28px;font-weight:600;margin-top:6px;line-height:1">'+(isFinite(BE.beVol)?dec(BE.beVol,1)+'<span style="font-size:14px;color:var(--ink3);font-weight:500"> T/mo</span>':'never')+'</div><div class="num" style="font-size:12px;color:var(--ink3);margin-top:3px">'+(isFinite(BE.beQtyKg)?inr(BE.beQtyKg)+' kg/mo':'contribution \u2264 0')+'</div></div>';
+  html+='<div style="padding:15px 16px"><div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);font-weight:600">Break-even sales</div><div class="num" style="font-size:28px;font-weight:600;margin-top:6px;line-height:1">'+(isFinite(BE.beSales)?'Rs '+cr(BE.beSales)+'<span style="font-size:14px;color:var(--ink3);font-weight:500"> Cr/mo</span>':'\u2014')+'</div><div style="font-size:12px;color:var(--ink3);margin-top:3px">sell below this and the month is a loss</div></div>';
+  html+='</div>';
+  html+='<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;border-top:1px solid var(--hairS);background:var(--surface)"><span style="font-size:12.5px;color:var(--ink2)">Fixed <b class="num">Rs '+inr(BE.fixedMo)+'</b>/mo \u00b7 you sell <b class="num">'+dec(BE.vol,0)+'T</b></span><span class="num" style="font-size:13.5px;font-weight:600;color:'+(BE.mos>0?'var(--green)':'var(--red)')+'">'+(BE.mos>0?'+'+dec(BE.mos,0)+'% margin of safety':dec(BE.mos,0)+'% \u2014 below break-even')+'</span></div>';
+  html+='</div>';
+  // ---- control limits to hold target RoCE (live) ----
+  html+='<div class="eyebrow" style="margin-top:30px">To hold '+tgt+'% RoCE at '+fv+'T \u2014 fix any ONE</div>';
+  html+='<div style="font-size:12.5px;color:var(--ink3);margin:6px 0 10px">RoCE now <b style="color:'+(CL.onTarget?'var(--green)':'var(--red)')+'">'+pct(CL.roceNow)+'</b> vs '+tgt+'% target. Each ceiling holds the other levers fixed.</div>';
+  function climit(label,aim,cur,ok,last){
+    return '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 16px;'+(last?'':'border-bottom:1px solid var(--hairS)')+'"><div style="min-width:0"><div style="font-size:15px;color:var(--ink);font-weight:500">'+label+'</div><div class="num" style="font-size:12px;color:var(--ink3);margin-top:2px">'+aim+' \u00b7 now '+cur+'</div></div><span style="flex:0 0 auto;font-size:12px;font-weight:600;padding:5px 11px;border-radius:8px;background:'+(ok?'var(--greenT)':'var(--redT)')+';color:'+(ok?'var(--green)':'var(--red)')+'">'+(ok?'on track':'off')+'</span></div>';
+  }
+  html+='<div style="border:1px solid var(--hair);border-radius:16px;overflow:hidden">';
+  html+=climit("Monthly volume",(isFinite(CL.minVol)?"raise to "+dec(CL.minVol,1)+"T":"unreachable as priced"),dec(fv,0)+"T",CL.volOk,false);
+  html+=climit("Fixed cost / month","keep under Rs "+dec(CL.maxFixedMo/1e5,2)+" L","Rs "+dec(CL.fixedMoNow/1e5,2)+" L",CL.fixedOk,false);
+  html+=climit("Debtor days","cut to "+dec(CL.maxDeb,0)+" days",dec(CL.debNow,0)+" days",CL.debOk,false);
+  html+=climit("Inventory days (RM+FG)","cut to "+dec(CL.maxInv,0)+" days",dec(CL.invNow,0)+" days",CL.invOk,true);
   html+='</div>';
   // margin of safety
   html+='<div class="eyebrow" style="margin-top:30px">Margin of safety \u2014 your lines in the sand</div>';
@@ -381,8 +404,8 @@ function analysisCategories(M){
   cats.push({t:"Target & threshold",b:(M.threshold?("On capital, the project clears "+tgt+"% from "+M.threshold+"T. At "+fv+"T it earns "+pct(s.roiCap)+" on Rs "+cr(s.I)+" Cr of total capital."):("No volume clears "+tgt+"% on capital alone at today\u2019s cost \u2014 cut cost per kg or lean on leverage."))});
   cats.push({t:"Funding with your Rs "+cap+" Cr",b:"Your equity is fixed at Rs "+cap+" Cr; the balance is debt. At "+fv+"T you put in Rs "+cr(s.equityUsed)+" Cr and borrow Rs "+cr(s.debtCap)+" Cr (D:E "+s.deCap.toFixed(2)+":1), giving "+pct(s.roeCap)+" on your own money \u2014 "+(s.roeCap>=tgt?"above":"below")+" your "+tgt+"% goal."});
   var firstROE=M.tiers.filter(function(t){return t.roeCap>=tgt;}),fr=firstROE.length?firstROE[0].vol:null;
-  var b3=(fr?("On your Rs "+cap+" Cr you clear "+tgt+"% from "+fr+"T onward. "):("Even with debt, your Rs "+cap+" Cr doesn\u2019t clear "+tgt+"% on the listed volumes \u2014 cost must fall first. "));
-  b3+="At "+nf(S.maxDE)+":1 your Rs "+cap+" Cr supports up to Rs "+cr(M.maxInvest)+" Cr of investment"+(M.maxLev?(", funding every column up to "+M.maxLev.vol+"T (ROE "+pct(M.maxLev.roeCap)+")."):", but the smallest column still needs more.");
+  var SF=selfFundCeiling(M);
+  var b3=SF.belowMin?("Your Rs "+cap+" Cr can\u2019t fully fund even "+SF.minVol+"T (needs Rs "+cr(SF.minI)+" Cr); debt is needed from the start."):("On Rs "+cap+" Cr alone you self-fund up to ~"+dec(SF.vol,0)+" T/mo (Rs "+cr(SF.sales)+" Cr turnover) at "+pct(SF.roce)+" RoCE; beyond that you must add debt. Full P&L on page 2.");
   cats.push({t:"How far your Rs "+cap+" Cr reaches",b:b3});
   cats.push({t:"Levers to optimise ROI",b:"In order: (1) sell more tonnes \u2014 fixed cost dilutes; (2) squeeze the foil vendor, ~75% of RM; (3) cut the "+nf(S.debDays)+"-day debtor cycle; (4) stretch supplier credit past "+nf(S.credDays)+" days."});
   return cats;
@@ -437,108 +460,389 @@ function save(){try{localStorage.setItem("alualu_state_v1",JSON.stringify(S));}c
 function load(){try{var raw=localStorage.getItem("alualu_state_v1");if(raw){var o=JSON.parse(raw);for(var k in o){if(Object.prototype.hasOwnProperty.call(o,k))S[k]=o[k];}}}catch(e){}}
 
 /* ---------- A4 PDF (2 pages) ---------- */
+function selfFundCeiling(M){
+  var E=M.Ecap, price=nf(S.price), tax=nf(S.tax)/100, finalRM=M.base.finalRM;
+  var ts=M.tiers.slice().sort(function(a,b){return a.vol-b.vol;});
+  if(ts[0].I>E) return {belowMin:true,minVol:ts[0].vol,minI:ts[0].I,E:E};
+  if(ts[ts.length-1].I<=E){var t=ts[ts.length-1];return {vol:t.vol,sales:t.salesYr,rmYr:t.rmYr,fixedYr:t.fixedYr,varYr:t.varYr,ebit:t.ebit,pat:t.patEq,I:t.I,roce:t.roiCap,E:E,aboveMax:true};}
+  var lo,hi;for(var i=0;i<ts.length-1;i++){if(ts[i].I<=E&&ts[i+1].I>E){lo=ts[i];hi=ts[i+1];break;}}
+  var f=(E-lo.I)/(hi.I-lo.I), vol=lo.vol+f*(hi.vol-lo.vol);
+  var fixedYr=lo.fixedYr+f*(hi.fixedYr-lo.fixedYr), varYr=lo.varYr+f*(hi.varYr-lo.varYr);
+  var kgYr=vol*12000, sales=kgYr*price, rmYr=kgYr*finalRM, ebit=sales-rmYr-fixedYr-varYr, pat=ebit*(1-tax);
+  return {vol:vol,sales:sales,rmYr:rmYr,fixedYr:fixedYr,varYr:varYr,ebit:ebit,pat:pat,I:E,roce:E?pat/E*100:0,E:E};
+}
+
+function growthNoDebt(M){
+  var E=M.Ecap, FA=M.base.fixedAssets;
+  var ts=M.tiers.slice().sort(function(a,b){return a.vol-b.vol;});
+  var pts=[{v:0,I:FA}];ts.forEach(function(t){pts.push({v:t.vol,I:t.I});});
+  function IAt(v){if(v<=0)return FA;for(var i=0;i<pts.length-1;i++){if(v>=pts[i].v&&v<=pts[i+1].v){var a=pts[i],bb=pts[i+1];return a.I+(bb.I-a.I)/(bb.v-a.v)*(v-a.v);}}var a=pts[pts.length-2],bb=pts[pts.length-1];return a.I+(bb.I-a.I)/(bb.v-a.v)*(v-a.v);}
+  function volForCap(C){if(C<=FA)return 0;for(var i=0;i<pts.length-1;i++){if(C>=pts[i].I&&C<=pts[i+1].I){var a=pts[i],bb=pts[i+1];return a.v+(bb.v-a.v)/(bb.I-a.I)*(C-a.I);}}var a=pts[pts.length-2],bb=pts[pts.length-1];return a.v+(bb.v-a.v)/(bb.I-a.I)*(C-a.I);}
+  var pp=ts.map(function(t){return {v:t.vol,pat:t.patEq};});
+  function patAt(v){if(pp.length===1)return pp[0].pat;if(v<=pp[0].v){var a=pp[0],bb=pp[1];return a.pat+(bb.pat-a.pat)/(bb.v-a.v)*(v-a.v);}for(var i=0;i<pp.length-1;i++){if(v>=pp[i].v&&v<=pp[i+1].v){var a=pp[i],bb=pp[i+1];return a.pat+(bb.pat-a.pat)/(bb.v-a.v)*(v-a.v);}}var a=pp[pp.length-2],bb=pp[pp.length-1];return a.pat+(bb.pat-a.pat)/(bb.v-a.v)*(v-a.v);}
+  var rows=ts.map(function(t){
+    var gap=Math.max(0,t.I-E), eq=Math.min(E,t.I);
+    if(t.I<=E+1) return {vol:t.vol,I:t.I,eq:eq,gap:0,pat:t.patEq,years:0,now:true};
+    var C=E,yr=0;
+    while(C<t.I-1 && yr<60){var v=Math.min(volForCap(C),t.vol);var pat=patAt(v);if(pat<=0){yr=999;break;}C+=pat;yr++;}
+    return {vol:t.vol,I:t.I,eq:eq,gap:gap,pat:t.patEq,years:(yr>=60?999:yr),now:false};
+  });
+  return {rows:rows,E:E};
+}
+
+function breakeven(M){
+  var price=nf(S.price), fin=M.base.finalRM, col=S.cols[S.focus], vol=focusVol();
+  var kgMo=vol*1000, varMo=sum(col.variable), fixedMo=sum(col.fixed);
+  var varPerKg=kgMo>0?varMo/kgMo:0, contrib=price-fin-varPerKg;
+  var beQtyKg=contrib>0?fixedMo/contrib:Infinity, beVol=beQtyKg/1000, beSales=beQtyKg*price;
+  var mos=(vol>0&&isFinite(beVol))?(vol-beVol)/vol*100:0;
+  return {price:price,fin:fin,varPerKg:varPerKg,contrib:contrib,fixedMo:fixedMo,beQtyKg:beQtyKg,beVol:beVol,beSales:beSales,mos:mos,vol:vol};
+}
+function controlLimits(M){
+  var s=M.sel, tgtP=nf(S.targetROI), tgt=tgtP/100, tax=nf(S.tax)/100, FA=M.base.fixedAssets;
+  var col=S.cols[S.focus], vol=focusVol();
+  var fixedMoNow=sum(col.fixed), debNow=nf(S.debDays), invNow=nf(S.rmDays)+nf(S.fgDays);
+  var maxFixedMo=(s.salesYr - s.rmYr - s.varYr - tgt*s.I/(1-tax))/12;
+  var I_t=tgt>0?s.patEq/tgt:Infinity, WC_t=I_t-FA;
+  var recv_t=WC_t - s.rmInv - s.fgInv + s.pay;
+  var maxDeb=s.salesYr>0?recv_t/(s.salesYr/365):0;
+  var invNowVal=s.rmInv+s.fgInv, invVal_t=WC_t - s.recv + s.pay;
+  var maxInv=invNowVal>0?invVal_t/invNowVal*invNow:0;
+  var ts=M.tiers.slice().sort(function(a,b){return a.vol-b.vol;}), minVol=null;
+  for(var i=0;i<ts.length-1;i++){var a=ts[i].roiCap-tgtP,bb=ts[i+1].roiCap-tgtP;if(a<0&&bb>=0&&ts[i+1].roiCap!==ts[i].roiCap){minVol=ts[i].vol+(tgtP-ts[i].roiCap)/(ts[i+1].roiCap-ts[i].roiCap)*(ts[i+1].vol-ts[i].vol);break;}}
+  if(minVol===null)minVol=(ts[0].roiCap>=tgtP)?ts[0].vol:Infinity;
+  return {tgt:tgtP,roceNow:s.roiCap,onTarget:s.roiCap>=tgtP-0.05,
+    maxFixedMo:maxFixedMo,fixedMoNow:fixedMoNow,fixedOk:fixedMoNow<=maxFixedMo,
+    maxDeb:maxDeb,debNow:debNow,debOk:debNow<=maxDeb,
+    maxInv:maxInv,invNow:invNow,invOk:invNow<=maxInv,
+    minVol:minVol,volNow:vol,volOk:isFinite(minVol)&&vol>=minVol};
+}
+
 function buildPDF(M){
-  var b=M.base, price=nf(S.price), T=M.tiers, tgt=nf(S.targetROI);
-  var INK="#1D1D1F",INK2="#6E6E73",INK3="#9A9AA0",GREEN="#0E7C57",RED="#C5304A",HAIR="#D6D6DA",HAIRS="#E8E8EC",BAND="#F2F2F4",SELC="#EDF6F1",WHITE="#FFFFFF",GREY="#8E8E93";
-  var H=842, s="";
+  var b=M.base, T=M.tiers, tgt=nf(S.targetROI), sel=M.sel, col=S.cols[S.focus];
+  var INK="#1D1D1F",INK2="#6E6E73",INK3="#9A9AA0",GREEN="#0E7C57",RED="#C5304A",HAIR="#D6D6DA",HAIRS="#E8E8EC",BAND="#F2F2F4",SELC="#EDF6F1",WHITE="#FFFFFF",GREY="#8E8E93",GT="#EEF6F1",SUBF="#FAFAFB";
+  var H=842;
   function hx(h){h=h.replace("#","");return (parseInt(h.substr(0,2),16)/255).toFixed(3)+" "+(parseInt(h.substr(2,2),16)/255).toFixed(3)+" "+(parseInt(h.substr(4,2),16)/255).toFixed(3);}
-  function san(t){return String(t).replace(/[\u2012\u2013\u2014\u2015\u2212]/g,"-").replace(/\u00B7/g,"-").replace(/\u00D7/g,"x").replace(/\u2192/g,"->").replace(/\u00B5/g,"u").replace(/\u00B3/g,"3").replace(/\u2019/g,"'").replace(/\u20B9/g,"Rs ").replace(/[^\x20-\x7e]/g,"");}
+  function san(t){return String(t).replace(/[\u2012\u2013\u2014\u2015]/g,"-").replace(/\u2212/g,"-").replace(/\u00B7/g,"-").replace(/\u00D7/g,"x").replace(/\u00F7/g,"/").replace(/\u2192/g,"->").replace(/\u00B5/g,"u").replace(/\u00B2/g,"2").replace(/\u00B3/g,"3").replace(/\u2019/g,"'").replace(/\u20B9/g,"Rs ").replace(/[^\x20-\x7e]/g,"");}
   function escp(t){return san(t).replace(/\\/g,"\\\\").replace(/\(/g,"\\(").replace(/\)/g,"\\)");}
-  function tw(str,size){str=san(str);var w=0;for(var i=0;i<str.length;i++){var c=str[i],u;if(c>='0'&&c<='9')u=.556;else if(c==='.'||c===','||c===' '||c===':'||c==="'"||c==='/')u=.278;else if(c==='%')u=.889;else if(c==='-')u=.333;else if(c===c.toUpperCase()&&c!==c.toLowerCase())u=.66;else u=.5;w+=u;}return w*size;}
-  function rect(x,y,w,h,f){s+=hx(f)+" rg "+x.toFixed(2)+" "+(H-y-h).toFixed(2)+" "+w.toFixed(2)+" "+h.toFixed(2)+" re f\n";}
-  function box(x,y,w,h,st,lw){s+=hx(st)+" RG "+(lw||0.8).toFixed(2)+" w "+x.toFixed(2)+" "+(H-y-h).toFixed(2)+" "+w.toFixed(2)+" "+h.toFixed(2)+" re S\n";}
-  function line(x1,y1,x2,y2,st,lw){s+=hx(st)+" RG "+(lw||0.6).toFixed(2)+" w "+x1.toFixed(2)+" "+(H-y1).toFixed(2)+" m "+x2.toFixed(2)+" "+(H-y2).toFixed(2)+" l S\n";}
-  function txt(x,y,t,size,bold,fill){s+="BT /F"+(bold?2:1)+" "+size+" Tf "+hx(fill||INK)+" rg "+x.toFixed(2)+" "+(H-y).toFixed(2)+" Td ("+escp(t)+") Tj ET\n";}
-  function rt(xr,y,t,size,bold,fill){txt(xr-tw(t,size),y,t,size,bold,fill);}
-  function wrap(t,n){t=san(t);var w=t.split(" "),o=[],c="";for(var i=0;i<w.length;i++){if((c+" "+w[i]).trim().length>n){o.push(c.trim());c=w[i];}else{c=(c+" "+w[i]).trim();}}if(c)o.push(c.trim());return o;}
-
-  rect(40,40,28,28,GREEN);txt(46,60,"AA",12,true,WHITE);
-  txt(76,54,"Alu-Alu Command",16,true,INK);
-  txt(76,70,"Project viability  -  own funds & leverage",9,false,INK2);
-  rt(555,52,"Revision "+S.revision,9,false,INK3);
-  rt(555,66,today(),9,false,INK3);
-  line(40,84,555,84,HAIR,1);
-
-  var by=94, bh=132;
-  box(40,by,250,bh,HAIR,0.9); box(300,by,255,bh,HAIR,0.9);
-  rect(40,by,250,20,BAND);txt(48,by+14,"ASSUMPTIONS",8.5,true,INK2);
-  rect(300,by,255,20,BAND);txt(308,by+14,"RAW MATERIALS  -  chosen vendor",8.5,true,INK2);
-  var pairs=[["Selling price","Rs "+dec(price,0)+"/kg"],["Wastage","+"+dec(nf(S.wastage),0)+"%"],["RM cost/kg","Rs "+dec(b.finalRM,0)],["Fixed assets","Rs "+cr(b.fixedAssets)+" Cr"],["RM stock",nf(S.rmDays)+" d"],["Finished goods",nf(S.fgDays)+" d"],["Debtor days",nf(S.debDays)+" d"],["Creditor days",nf(S.credDays)+" d"],["Target ROI",nf(S.targetROI)+"%"],["Interest",nf(S.interest)+"%"],["Tax",dec(nf(S.tax),0)+"%"],["Equity cap","Rs "+nf(S.equityCap)+" Cr"]];
-  var ry=by+34;
-  for(var i=0;i<pairs.length;i+=2){
-    txt(48,ry,pairs[i][0],8.5,false,INK2);rt(160,ry,pairs[i][1],8.5,true,INK);
-    if(pairs[i+1]){txt(172,ry,pairs[i+1][0],8.5,false,INK2);rt(282,ry,pairs[i+1][1],8.5,true,INK);}
-    ry+=15.5;
+  function tw(str,size){str=san(str);var w=0;for(var i=0;i<str.length;i++){var c=str[i],u;if(c>='0'&&c<='9')u=.556;else if(c==='.'||c===','||c===' '||c===':'||c==="'"||c==='/')u=.278;else if(c==='%')u=.889;else if(c==='-'||c==='('||c===')')u=.333;else if(c===c.toUpperCase()&&c!==c.toLowerCase())u=.66;else u=.5;w+=u;}return w*size;}
+  function P(){var o={s:""};
+    o.rect=function(x,y,w,h,f){o.s+=hx(f)+" rg "+x.toFixed(2)+" "+(H-y-h).toFixed(2)+" "+w.toFixed(2)+" "+h.toFixed(2)+" re f\n";};
+    o.box=function(x,y,w,h,st,lw){o.s+=hx(st)+" RG "+(lw||0.8).toFixed(2)+" w "+x.toFixed(2)+" "+(H-y-h).toFixed(2)+" "+w.toFixed(2)+" "+h.toFixed(2)+" re S\n";};
+    o.line=function(x1,y1,x2,y2,st,lw){o.s+=hx(st)+" RG "+(lw||0.6).toFixed(2)+" w "+x1.toFixed(2)+" "+(H-y1).toFixed(2)+" m "+x2.toFixed(2)+" "+(H-y2).toFixed(2)+" l S\n";};
+    o.txt=function(x,y,t,size,bold,fill){o.s+="BT /F"+(bold?2:1)+" "+size+" Tf "+hx(fill||INK)+" rg "+x.toFixed(2)+" "+(H-y).toFixed(2)+" Td ("+escp(t)+") Tj ET\n";};
+    o.rt=function(xr,y,t,size,bold,fill){o.txt(xr-tw(t,size),y,t,size,bold,fill);};
+    o.ctr=function(cx,y,t,size,bold,fill){o.txt(cx-tw(t,size)/2,y,t,size,bold,fill);};
+    o.wrap=function(t,n){t=san(t);var w=t.split(" "),out=[],c="";for(var i=0;i<w.length;i++){if((c+" "+w[i]).trim().length>n){out.push(c.trim());c=w[i];}else{c=(c+" "+w[i]).trim();}}if(c)out.push(c.trim());return out;};
+    return o;
   }
-  var my=by+36;
-  function matRow(name,vendor,rate){txt(308,my,name,9,true,INK);txt(412,my,vendor,8.5,false,GREY);rt(547,my,rate,9,true,INK);my+=18;}
-  b.subsK.forEach(function(v){matRow(v.name.length>19?v.name.substr(0,19):v.name, v.vendor, "Rs "+dec(v.rate,0)+"/kg");});
-  matRow("Adhesive","blended","Rs "+dec(b.adh.avgRate,0)+"/kg");
-  line(305,my-3,550,my-3,HAIRS,0.6);
-  txt(308,my+10,"Final RM consumed",9,true,INK);rt(547,my+10,"Rs "+dec(b.finalRM,0)+"/kg",9,true,GREEN);
+  function tileRow(p,x,y,w,items,gap,th,vf){
+    vf=vf||14;var n=items.length, twd=(w-(n-1)*gap)/n;
+    items.forEach(function(it,i){
+      var tx=x+i*(twd+gap);
+      p.rect(tx,y,twd,th,it.hl?SELC:GT);p.box(tx,y,twd,th,HAIR,0.7);
+      var lw=p.wrap(it.lab,Math.max(9,Math.floor(twd/4.2)));
+      p.ctr(tx+twd/2,y+17,lw[0],7.2,true,INK2);if(lw[1])p.ctr(tx+twd/2,y+27,lw[1],7.2,true,INK2);
+      p.ctr(tx+twd/2,y+(it.sub?th-20:th-15),it.val,vf,true,it.col||INK);
+      if(it.sub)p.ctr(tx+twd/2,y+th-8,it.sub,7,false,INK3);
+    });
+  }
+  var EDG=[190,281,372,463,554], CR4=[277,368,459,550], VR4=[255,346,437,528];
 
-  var ty=by+bh+22;
-  txt(40,ty,"RETURNS BY MONTHLY VOLUME   (Rs Cr/yr, % vs sales)",10,true,INK2);
-  var mx0=40,mw=515, edges=[190,281,372,463,554], colR=[277,368,459,550], valR=[colR[0]-22,colR[1]-22,colR[2]-22,colR[3]-22], mtop=ty+10, fi=S.focus;
-  function pc(fn){return T.map(function(t){return t.salesYr?Math.round(fn(t))+"%":"";});}
-  var rows=[];
-  rows.push({sec:"PROFIT & LOSS   (Rs Cr / year)"});
-  rows.push({l:"Sales",c:T.map(function(t){return cr(t.salesYr);})});
-  rows.push({l:"Raw material",c:T.map(function(t){return cr(t.rmYr);}),p:pc(function(t){return t.rmYr/t.salesYr*100;})});
-  rows.push({l:"Fixed cost",c:T.map(function(t){return cr(t.fixedYr);}),p:pc(function(t){return t.fixedYr/t.salesYr*100;})});
-  rows.push({l:"Variable cost",c:T.map(function(t){return cr(t.varYr);}),p:pc(function(t){return t.varYr/t.salesYr*100;})});
-  rows.push({l:"Operating profit",c:T.map(function(t){return cr(t.ebit);}),b:true,p:pc(function(t){return t.ebit/t.salesYr*100;})});
-  rows.push({l:"Net profit (after tax)",c:T.map(function(t){return cr(t.patEq);}),b:true,col:function(i){return T[i].patEq>0?GREEN:RED;},p:pc(function(t){return t.patEq/t.salesYr*100;})});
-  rows.push({sec:"INVESTMENT   (Rs Cr)"});
-  rows.push({l:"Fixed assets",c:T.map(function(){return cr(b.fixedAssets);})});
-  rows.push({l:"Working capital",c:T.map(function(t){return cr(t.wc);})});
-  rows.push({l:"Total investment",c:T.map(function(t){return cr(t.I);}),b:true});
-  rows.push({sec:"FUNDING WITH YOUR RS "+nf(S.equityCap)+" CR EQUITY  (balance = debt)"});
-  rows.push({l:"ROI on capital (all-equity)",c:T.map(function(t){return pct(t.roiCap);}),b:true,col:function(i){return T[i].pass?GREEN:RED;}});
-  rows.push({l:"Your equity (own funds)",c:T.map(function(t){return cr(t.equityUsed);})});
-  rows.push({l:"Debt to arrange",c:T.map(function(t){return cr(t.debtCap);})});
-  rows.push({l:"Debt : Equity",c:T.map(function(t){return t.deCap.toFixed(2)+":1";})});
-  rows.push({l:"Return on YOUR equity",c:T.map(function(t){return pct(t.roeCap);}),b:true,col:function(i){return T[i].roeCap>=tgt?GREEN:RED;}});
-  var rowH=15.0, hdrH=17, totalH=hdrH+rows.length*rowH;
-  rect(edges[fi],mtop,edges[fi+1]-edges[fi],totalH,SELC);
-  T.forEach(function(t,i){rt(valR[i],mtop+12,nf(S.cols[i].vol)+"T",9.5,true,i===fi?GREEN:INK);});
-  line(mx0,mtop+hdrH,mx0+mw,mtop+hdrH,HAIR,0.9);
-  var yy=mtop+hdrH;
-  rows.forEach(function(rw){
-    if(rw.sec){rect(mx0,yy,mw,rowH,BAND);txt(mx0+8,yy+10.5,rw.sec,8,true,INK2);yy+=rowH;return;}
-    txt(mx0+8,yy+10.5,rw.l,9,!!rw.b,rw.b?INK:INK2);
-    rw.c.forEach(function(cell,i){rt(valR[i],yy+10.5,cell,9,!!rw.b,rw.col?rw.col(i):INK);if(rw.p&&rw.p[i]){rt(colR[i],yy+10.5,rw.p[i],8,false,INK3);}});
-    line(mx0,yy+rowH,mx0+mw,yy+rowH,HAIRS,0.4);yy+=rowH;
-  });
-  box(mx0,mtop,mw,totalH,HAIR,0.9);
-  [edges[0],edges[1],edges[2],edges[3]].forEach(function(xx){line(xx,mtop,xx,mtop+totalH,HAIRS,0.5);});
+  /* ===== PAGE 1 : OVERVIEW (assumptions + returns + meaning) ===== */
+  function drawPage1(p){
+    p.rect(40,40,30,30,GREEN);p.txt(47,61,"AA",13,true,WHITE);
+    p.txt(80,55,"Alu-Alu Command",17,true,INK);
+    p.txt(80,72,"Project viability  -  own funds & leverage",10,false,INK2);
+    p.rt(555,52,"Revision "+S.revision,9.5,false,INK3);p.rt(555,67,today(),9.5,false,INK3);
+    p.line(40,88,555,88,HAIR,1);
 
-  var ay2=mtop+totalH+20;
-  txt(40,ay2,"ANALYSIS  -  achieving "+tgt+"% efficiently",10,true,INK2);
-  var cats=analysisCategories(M), bx=[40,300], bw=[250,255], cbh=86, gap=12, cby=ay2+10;
-  cats.forEach(function(cat,idx){
-    var cx=bx[idx%2], cw=bw[idx%2], cy=cby+Math.floor(idx/2)*(cbh+gap);
-    box(cx,cy,cw,cbh,HAIR,0.9);
-    rect(cx,cy,cw,18,BAND);txt(cx+8,cy+12.5,cat.t,8.5,true,INK2);
-    var ls=wrap(san(cat.b),cw>252?54:53), ly=cy+31;
-    ls.slice(0,4).forEach(function(ln){txt(cx+8,ly,ln,8.5,false,INK);ly+=11.5;});
-  });
-  txt(40,cby+2*(cbh+gap)+4,"Goal: reach "+tgt+"% on capital in the most efficient way - least own money, cheapest cycle, lowest cost per kg.",8,false,INK3);
-  txt(40,828,"Alu-Alu Command  -  generated "+today(),8,false,INK3);
+    var by=98, bh=170;
+    p.box(40,by,250,bh,HAIR,0.9);p.box(300,by,255,bh,HAIR,0.9);
+    p.rect(40,by,250,21,BAND);p.txt(48,by+14.5,"KEY ASSUMPTIONS",9,true,INK2);
+    p.rect(300,by,255,21,BAND);p.txt(308,by+14.5,"RAW MATERIALS  -  chosen vendor",9,true,INK2);
+    var pairs=[["Selling price","Rs "+dec(nf(S.price),0)+"/kg"],["Wastage","+"+dec(nf(S.wastage),0)+"%"],["RM incl wastage","Rs "+dec(b.finalRM,0)],["Fixed assets","Rs "+cr(b.fixedAssets)+" Cr"],["RM stock",nf(S.rmDays)+" d"],["Finished goods",nf(S.fgDays)+" d"],["Debtor days",nf(S.debDays)+" d"],["Creditor days",nf(S.credDays)+" d"],["Target ROI",nf(S.targetROI)+"%"],["Interest",nf(S.interest)+"%"],["Tax",dec(nf(S.tax),0)+"%"],["Equity cap","Rs "+nf(S.equityCap)+" Cr"]];
+    var ry=by+39;
+    for(var i=0;i<pairs.length;i+=2){
+      p.txt(48,ry,pairs[i][0],9,false,INK2);p.rt(162,ry,pairs[i][1],9,true,INK);
+      if(pairs[i+1]){p.txt(174,ry,pairs[i+1][0],9,false,INK2);p.rt(282,ry,pairs[i+1][1],9,true,INK);}
+      ry+=16.6;
+    }
+    var my=by+41;
+    function matRow(name,vendor,rate){p.txt(308,my,name,9.5,true,INK);p.txt(420,my,vendor,9,false,GREY);p.rt(547,my,rate,9.5,true,INK);my+=19;}
+    b.subsK.forEach(function(v){matRow(v.name.length>18?v.name.substr(0,18):v.name,v.vendor,"Rs "+dec(v.rate,0)+"/kg");});
+    matRow("Adhesive","blended","Rs "+dec(b.adh.avgRate,0)+"/kg");
+    p.line(305,my-2,550,my-2,HAIRS,0.6);
+    p.txt(308,my+12,"Ideal RM cost / kg",9,false,INK2);p.rt(547,my+12,"Rs "+dec(b.idealCostKg,0)+"/kg",9,false,INK);
+    p.txt(308,my+28,"add Std wastage",9,false,INK2);p.rt(547,my+28,"+ "+dec(nf(S.wastage),2)+"%",9,false,INK);
+    p.txt(308,my+46,"RM cost / kg (incl. wastage)",9,true,INK);p.rt(547,my+46,"Rs "+dec(b.finalRM,0)+"/kg",10.5,true,GREEN);
 
+    var ty=by+bh+22, fi=S.focus;
+    p.txt(40,ty,"RETURNS BY MONTHLY VOLUME   (Rs Cr / year, grey = % of sales)",10.5,true,INK2);
+    var mtop=ty+10, hdrH=18, rowH=16.2;
+    function pc(fn){return T.map(function(t){return t.salesYr?Math.round(fn(t))+"%":"";});}
+    var rows=[];
+    rows.push({sec:"PROFIT & LOSS"});
+    rows.push({l:"Sales",c:T.map(function(t){return cr(t.salesYr);})});
+    rows.push({l:"Raw material",c:T.map(function(t){return cr(t.rmYr);}),p:pc(function(t){return t.rmYr/t.salesYr*100;})});
+    rows.push({l:"Fixed cost",c:T.map(function(t){return cr(t.fixedYr);}),p:pc(function(t){return t.fixedYr/t.salesYr*100;})});
+    rows.push({l:"Variable cost",c:T.map(function(t){return cr(t.varYr);}),p:pc(function(t){return t.varYr/t.salesYr*100;})});
+    rows.push({l:"Operating profit",c:T.map(function(t){return cr(t.ebit);}),b:true,p:pc(function(t){return t.ebit/t.salesYr*100;})});
+    rows.push({l:"Net profit (after tax)",c:T.map(function(t){return cr(t.patEq);}),b:true,col:function(i){return T[i].patEq>0?GREEN:RED;},p:pc(function(t){return t.patEq/t.salesYr*100;})});
+    rows.push({sec:"INVESTMENT"});
+    rows.push({l:"Fixed assets",c:T.map(function(){return cr(b.fixedAssets);})});
+    rows.push({l:"Working capital",c:T.map(function(t){return cr(t.wc);})});
+    rows.push({l:"Total capital employed",c:T.map(function(t){return cr(t.I);}),b:true});
+    rows.push({sec:"FUNDING WITH YOUR RS "+nf(S.equityCap)+" CR EQUITY  (balance = debt)"});
+    rows.push({l:"RoCE (on capital)",c:T.map(function(t){return pct(t.roiCap);}),b:true,col:function(i){return T[i].pass?GREEN:RED;}});
+    rows.push({l:"Your equity",c:T.map(function(t){return cr(t.equityUsed);})});
+    rows.push({l:"Debt to arrange",c:T.map(function(t){return cr(t.debtCap);})});
+    rows.push({l:"Debt : Equity",c:T.map(function(t){return t.deCap.toFixed(2)+":1";})});
+    rows.push({l:"RoE (on your equity)",c:T.map(function(t){return pct(t.roeCap);}),b:true,col:function(i){return T[i].roeCap>=tgt?GREEN:RED;}});
+    var totalH=hdrH+rows.length*rowH;
+    p.rect(EDG[fi],mtop,EDG[fi+1]-EDG[fi],totalH,SELC);
+    T.forEach(function(t,i){p.rt(VR4[i],mtop+13,nf(S.cols[i].vol)+"T",10,true,i===fi?GREEN:INK);});
+    p.line(40,mtop+hdrH,555,mtop+hdrH,HAIR,0.9);
+    var yy=mtop+hdrH;
+    rows.forEach(function(rw){
+      if(rw.sec){p.rect(40,yy,515,rowH,BAND);p.txt(48,yy+11,rw.sec,8.4,true,INK2);yy+=rowH;return;}
+      p.txt(48,yy+11,rw.l,10,!!rw.b,rw.b?INK:INK2);
+      rw.c.forEach(function(cell,i){p.rt(VR4[i],yy+11,cell,10,!!rw.b,rw.col?rw.col(i):INK);if(rw.p&&rw.p[i]){p.rt(CR4[i],yy+11,rw.p[i],8,false,INK3);}});
+      p.line(40,yy+rowH,555,yy+rowH,HAIRS,0.4);yy+=rowH;
+    });
+    p.box(40,mtop,515,totalH,HAIR,0.9);
+    [EDG[0],EDG[1],EDG[2],EDG[3]].forEach(function(xx){p.line(xx,mtop,xx,mtop+totalH,HAIRS,0.5);});
+
+    var ay2=mtop+totalH+18, cats=analysisCategories(M), bx=[40,300], bw=[250,255], cbh=80, gap=11, cby=ay2+10;
+    p.txt(40,ay2,"WHAT IT MEANS  -  achieving "+tgt+"% efficiently",10.5,true,INK2);
+    cats.forEach(function(cat,idx){
+      var cx=bx[idx%2], cw=bw[idx%2], cy=cby+Math.floor(idx/2)*(cbh+gap);
+      p.box(cx,cy,cw,cbh,HAIR,0.9);p.rect(cx,cy,cw,18,BAND);p.txt(cx+8,cy+12.5,cat.t,9,true,INK2);
+      var ls=p.wrap(san(cat.b),50), ly=cy+32;
+      ls.slice(0,4).forEach(function(ln){p.txt(cx+8,ly,ln,8.9,false,INK);ly+=11.6;});
+    });
+    p.line(40,815,555,815,HAIRS,0.6);p.txt(40,828,"Alu-Alu Command  -  page 1 of 4  -  generated "+today(),8.5,false,INK3);
+  }
+
+  /* ===== PAGE 2 : CAPITAL & SELF-FUNDING (dashboard) ===== */
+  function drawPage2(p){
+    var s=sel, SF=selfFundCeiling(M), fv=nf(S.cols[S.focus].vol);
+    p.rect(40,40,30,30,GREEN);p.txt(47,61,"AA",13,true,WHITE);
+    p.txt(80,55,"Capital & self-funding",17,true,INK);
+    p.txt(80,72,"How the money is built  -  detail at "+fv+" T/mo",10,false,INK2);
+    p.rt(555,67,today(),9.5,false,INK3);p.line(40,88,555,88,HAIR,1);
+
+    p.txt(40,110,"CAPITAL & RETURNS  -  AT "+fv+" T / MONTH",9.5,true,INK2);
+    tileRow(p,40,118,515,[
+      {lab:"TOTAL CAPITAL EMPLOYED",val:"Rs "+cr(s.I)+" Cr",sub:"A + B"},
+      {lab:"RoCE",val:pct(s.roiCap),sub:"PAT Rs "+cr(s.patEq)+" Cr",col:s.pass?GREEN:RED,hl:true},
+      {lab:"EQUITY",val:"Rs "+cr(s.equityUsed)+" Cr",sub:pct(s.I?s.equityUsed/s.I*100:0)+" of capital"},
+      {lab:"DEBT",val:"Rs "+cr(s.debtCap)+" Cr",sub:"D:E "+s.deCap.toFixed(2)+":1"},
+      {lab:"RoE",val:pct(s.roeCap),sub:(s.roeCap>=tgt?"clears ":"below ")+tgt+"%",col:s.roeCap>=tgt?GREEN:RED,hl:true}
+    ],5,80,17);
+
+    var ty0=222, boxH=226;
+    p.box(40,ty0,250,boxH,HAIR,0.9);
+    p.rect(40,ty0,250,21,BAND);p.txt(48,ty0+14.5,"FIXED ASSETS (A)  -  Rs "+cr(b.fixedAssets)+" Cr",9,true,INK2);
+    p.txt(48,ty0+34,"Same at every volume  (Rs Cr)",8,false,INK3);
+    var ay=ty0+51, arh=13.8;
+    S.assets.forEach(function(a,i){p.txt(50,ay+i*arh,a.name.length>33?a.name.substr(0,33):a.name,8.8,false,INK2);p.rt(282,ay+i*arh,cr(nf(a.amt)),8.8,false,INK);});
+    var ae=ay+S.assets.length*arh;p.line(48,ae,284,ae,HAIRS,0.5);
+    p.txt(50,ae+15,"Total fixed assets",9.2,true,INK);p.rt(282,ae+15,"Rs "+cr(b.fixedAssets)+" Cr",9.2,true,INK);
+
+    p.box(300,ty0,255,boxH,HAIR,0.9);
+    p.rect(300,ty0,255,21,BAND);p.txt(308,ty0+14.5,"WORKING CAPITAL (B)  -  Rs "+cr(s.wc)+" Cr",9,true,INK2);
+    p.txt(308,ty0+34,"How each piece is worked out, at "+fv+"T",8,false,INK3);
+    var aCOGS=s.salesYr-s.ebit, wy=ty0+53;
+    function wc(label,form,amt,sign,bold,c){
+      p.txt(308,wy,label,9.2,!!bold,bold?INK:INK2);
+      if(form)p.txt(308,wy+13,form,8,false,INK3);
+      p.rt(547,wy+(bold?2:1),(sign||"")+"Rs "+cr(amt)+" Cr",9.4,!!bold,c||INK);
+      wy+=(bold?24:33);
+    }
+    wc("Raw material stock","Annual RM "+cr(s.rmYr)+" Cr / 365 x "+nf(S.rmDays)+" d",s.rmInv);
+    wc("Finished goods & WIP","Annual COGS "+cr(aCOGS)+" Cr / 365 x "+nf(S.fgDays)+" d",s.fgInv);
+    wc("Debtors","Annual sales "+cr(s.salesYr)+" Cr / 365 x "+nf(S.debDays)+" d",s.recv);
+    wc("less Creditors","Annual RM "+cr(s.rmYr)+" Cr / 365 x "+nf(S.credDays)+" d",s.pay,"- ",false,GREEN);
+    p.line(305,wy-4,550,wy-4,HAIRS,0.6);
+    wc("Net working capital (B)","",s.wc,"",true);
+
+    var cy=ty0+boxH+18;
+    p.rect(40,cy,515,20,GT);p.txt(48,cy+14,"SELF-FUNDED CEILING  -  Rs "+nf(S.equityCap)+" Cr, NO DEBT  -  where your own money runs out",9,true,GREEN);
+    var cby=cy+20;p.box(40,cby,515,86,HAIR,0.9);
+    if(SF.belowMin){
+      p.txt(56,cby+38,"Rs "+nf(S.equityCap)+" Cr cannot fully fund even the smallest "+SF.minVol+"T (needs Rs "+cr(SF.minI)+" Cr).",10,true,RED);
+      p.txt(56,cby+58,"Debt is needed from the start.",10,true,RED);
+    }else{
+      p.txt(56,cby+28,"You get stuck at",9,false,INK3);
+      p.txt(56,cby+57,dec(SF.vol,1)+" T / month",21,true,INK);
+      p.txt(56,cby+74,"turnover Rs "+cr(SF.sales)+" Cr / yr",9.5,false,INK2);
+      var sx=232, sw=(545-232)/4;
+      [["Sales","Rs "+cr(SF.sales)+" Cr",INK],["RM + costs","Rs "+cr(SF.rmYr+SF.fixedYr+SF.varYr)+" Cr",INK],["Net profit","Rs "+cr(SF.pat)+" Cr",SF.pat>0?GREEN:RED],["RoCE here",pct(SF.roce),INK]].forEach(function(it,i){
+        var tx=sx+i*sw;p.line(tx,cby+16,tx,cby+70,HAIRS,0.5);
+        p.txt(tx+14,cby+36,it[0],8.4,false,INK3);p.txt(tx+14,cby+58,it[1],13,true,it[2]);
+      });
+    }
+
+    var CCC=nf(S.rmDays)+nf(S.fgDays)+nf(S.debDays)-nf(S.credDays);
+    var cyc=p.wrap("Cash stays tied up about "+CCC+" days: RM stock "+nf(S.rmDays)+" + finished goods "+nf(S.fgDays)+" + debtors "+nf(S.debDays)+" - suppliers' credit "+nf(S.credDays)+". That locked-up cash IS the working capital, and it must be funded before the first rupee of profit comes in.",112);
+    var maxMo=0;T.forEach(function(t){var need=Math.max(0,t.I-M.Ecap);var mo=(need>0&&t.patEq>0)?need/t.patEq*12:0;if(mo>maxMo)maxMo=mo;});
+    var vtxt=(SF.belowMin?("Your Rs "+nf(S.equityCap)+" Cr does not fully cover even the smallest column - outside funding is needed from the start. "):("Up to ~"+dec(SF.vol,0)+"T your Rs "+nf(S.equityCap)+" Cr funds the fixed assets and the whole working-capital cycle - NO outside money. "))+"Past that, the outside need is a bridge the business repays from its own profit in about "+Math.round(maxMo)+" months - short-term working-capital finance, not permanent debt. Suppliers ("+nf(S.credDays)+"d) and salaries are paid on their due dates throughout.";
+    var vt=p.wrap(vtxt,112);
+    var gy=cby+86+18, gcol=[300,402,455,502,548];
+    var boxH=20+12+cyc.length*11.5+9+16+T.length*18+13+vt.length*11.5+6;
+    p.box(40,gy,515,boxH,HAIR,0.9);
+    p.rect(40,gy,515,20,BAND);p.txt(48,gy+14,"WILL YOU NEED OUTSIDE MONEY?  -  funding the working-capital cycle",9,true,INK2);
+    var cyy=gy+32;cyc.forEach(function(ln){p.txt(48,cyy,ln,8.5,false,INK2);cyy+=11.5;});
+    var thy=cyy+1;
+    p.txt(48,thy+10,"Volume",8.2,true,INK3);
+    p.rt(gcol[0],thy+10,"Capital needed",8.2,true,INK3);p.rt(gcol[1],thy+10,"Your Rs "+nf(S.equityCap)+" Cr",8.2,true,INK3);
+    p.rt(gcol[2],thy+10,"Outside",8.2,true,INK3);p.rt(gcol[3],thy+10,"Profit/yr",8.2,true,INK3);p.rt(gcol[4],thy+10,"Repaid in",8.2,true,INK3);
+    p.line(40,thy+16,555,thy+16,HAIR,0.7);
+    var gyy=thy+16;
+    T.forEach(function(t,i){
+      var eqd=Math.min(M.Ecap,t.I), need=Math.max(0,t.I-M.Ecap), mo=(need>0&&t.patEq>0)?need/t.patEq*12:0;
+      if(i===S.focus)p.rect(40,gyy,515,18,SELC);
+      p.txt(48,gyy+12.5,nf(t.vol)+"T",9.6,true,INK);
+      p.rt(gcol[0],gyy+12.5,cr(t.I)+" Cr",9.4,false,INK2);
+      p.rt(gcol[1],gyy+12.5,cr(eqd)+" Cr",9.4,false,INK2);
+      p.rt(gcol[2],gyy+12.5,need>0?cr(need)+" Cr":"none",9.6,true,need>0?INK:GREEN);
+      p.rt(gcol[3],gyy+12.5,cr(t.patEq)+" Cr",9.4,false,INK2);
+      p.rt(gcol[4],gyy+12.5,need>0?(t.patEq>0?"~"+Math.round(mo)+" mo":"never"):"-",9.4,true,need>0?(t.patEq>0?INK:RED):INK3);
+      p.line(40,gyy+18,555,gyy+18,HAIRS,0.35);gyy+=18;
+    });
+    var vy=gyy+13;vt.forEach(function(ln){p.txt(48,vy,ln,8.4,false,INK3);vy+=11.5;});
+
+    p.line(40,815,555,815,HAIRS,0.6);p.txt(40,828,"Alu-Alu Command  -  page 3 of 4  -  detail at "+fv+" T/mo  -  "+today(),8.5,false,INK3);
+  }
+
+  /* ===== PAGE 3 : MONTHLY COST BREAK-UP ===== */
+  function drawPage3(p){
+    p.rect(40,40,30,30,GREEN);p.txt(47,61,"AA",13,true,WHITE);
+    p.txt(80,55,"Monthly cost break-up",17,true,INK);
+    p.txt(80,72,"Every line, across all four volumes  -  "+nf(S.cols[S.focus].vol)+"T highlighted",10,false,INK2);
+    p.rt(555,67,today(),9.5,false,INK3);p.line(40,88,555,88,HAIR,1);
+
+    var fi=S.focus, top=110;
+    p.rect(40,top,515,21,BAND);p.txt(48,top+14.5,"COST PER MONTH BY VOLUME   (Rs)",9.2,true,INK2);
+    var hy=top+21, hdrH=20, rowH=20.4;
+    var rows=[];
+    rows.push({sub:"FIXED COST"});
+    col.fixed.forEach(function(f,k){rows.push({l:f.name,c:T.map(function(t,ci){return inr(nf(S.cols[ci].fixed[k].amt));})});});
+    rows.push({l:"Total fixed / month",c:T.map(function(t,ci){return inr(sum(S.cols[ci].fixed));}),b:true});
+    rows.push({sub:"VARIABLE COST"});
+    col.variable.forEach(function(v,k){rows.push({l:v.name,c:T.map(function(t,ci){return inr(nf(S.cols[ci].variable[k].amt));})});});
+    rows.push({l:"Total variable / month",c:T.map(function(t,ci){return inr(sum(S.cols[ci].variable));}),b:true});
+    rows.push({sub:"PER KILOGRAM"});
+    rows.push({l:"Conversion cost / kg",c:T.map(function(t){return "Rs "+dec(t.conv,2);}),b:true,col:function(){return GREEN;}});
+    rows.push({l:"RM cost / kg (incl. wastage)",c:T.map(function(){return "Rs "+dec(b.finalRM,0);})});
+    rows.push({l:"Selling price / kg",c:T.map(function(){return "Rs "+dec(nf(S.price),0);})});
+    var totalH=hdrH+rows.length*rowH;
+    p.rect(EDG[fi],hy,EDG[fi+1]-EDG[fi],totalH,SELC);
+    T.forEach(function(t,i){p.rt(CR4[i],hy+14,nf(S.cols[i].vol)+"T",10.5,true,i===fi?GREEN:INK);});
+    p.line(40,hy+hdrH,555,hy+hdrH,HAIR,0.9);
+    var yy=hy+hdrH;
+    rows.forEach(function(rw){
+      if(rw.sub){p.rect(40,yy,515,rowH,SUBF);p.txt(48,yy+13.6,rw.sub,8.2,true,INK3);p.line(40,yy+rowH,555,yy+rowH,HAIRS,0.4);yy+=rowH;return;}
+      p.txt(48,yy+13.6,rw.l,10,!!rw.b,rw.b?INK:INK2);
+      rw.c.forEach(function(cell,i){p.rt(CR4[i],yy+13.6,cell,10,!!rw.b,rw.col?rw.col(i):INK);});
+      p.line(40,yy+rowH,555,yy+rowH,HAIRS,0.35);yy+=rowH;
+    });
+    p.box(40,hy,515,totalH,HAIR,0.9);
+    [EDG[0],EDG[1],EDG[2],EDG[3]].forEach(function(xx){p.line(xx,hy,xx,hy+totalH,HAIRS,0.5);});
+
+    var ny=hy+totalH+22;
+    p.rect(40,ny,515,20,GT);p.txt(48,ny+14,"READING IT",9,true,GREEN);
+    var note=p.wrap("Fixed cost is the same rupees whether you sell little or much, so spreading it over more kilos is what drives the conversion cost down from Rs "+dec(T[0].conv,2)+"/kg at "+nf(S.cols[0].vol)+"T to Rs "+dec(T[T.length-1].conv,2)+"/kg at "+nf(S.cols[T.length-1].vol)+"T. With RM at Rs "+dec(b.finalRM,0)+"/kg and price at Rs "+dec(nf(S.price),0)+"/kg, every extra tonne widens the gross margin - the single biggest lever on this project.",104);
+    var nyy=ny+38;note.forEach(function(ln){p.txt(48,nyy,ln,9.6,false,INK);nyy+=14.5;});
+
+    p.line(40,815,555,815,HAIRS,0.6);p.txt(40,828,"Alu-Alu Command  -  page 4 of 4  -  all four volumes  -  "+today(),8.5,false,INK3);
+  }
+
+  /* ===== PAGE 2 : TARGETS, BREAKEVEN & CONTROL ===== */
+  function drawPageCtrl(p){
+    var s=sel, BE=breakeven(M), CL=controlLimits(M), fv=nf(S.cols[S.focus].vol), tgt=nf(S.targetROI);
+    p.rect(40,40,30,30,GREEN);p.txt(47,61,"AA",13,true,WHITE);
+    p.txt(80,55,"Targets, breakeven & control",17,true,INK);
+    p.txt(80,72,"What to hold to hit "+tgt+"% RoCE  -  at "+fv+" T/mo",10,false,INK2);
+    p.rt(555,67,today(),9.5,false,INK3);p.line(40,88,555,88,HAIR,1);
+
+    p.txt(40,110,"WHERE YOU STAND  -  AT "+fv+" T / MONTH",9.5,true,INK2);
+    tileRow(p,40,118,515,[
+      {lab:"RoCE NOW",val:pct(s.roiCap),sub:"target "+tgt+"%",col:s.roiCap>=tgt?GREEN:RED,hl:true},
+      {lab:"NET PROFIT / YR",val:"Rs "+cr(s.patEq)+" Cr",sub:pct(s.salesYr?s.patEq/s.salesYr*100:0)+" of sales",col:s.patEq>0?GREEN:RED},
+      {lab:"CAPITAL EMPLOYED",val:"Rs "+cr(s.I)+" Cr"},
+      {lab:"RoE NOW",val:pct(s.roeCap),sub:(s.roeCap>=tgt?"clears ":"below ")+tgt+"%",col:s.roeCap>=tgt?GREEN:RED}
+    ],4,80,17);
+
+    var by=222;
+    p.rect(40,by,515,20,GT);p.txt(48,by+14,"BREAK-EVEN  -  the floor you must clear every month  (price Rs "+dec(BE.price,0)+"/kg)",9,true,GREEN);
+    var bby=by+20;p.box(40,bby,515,112,HAIR,0.9);
+    p.txt(56,bby+24,"BREAK-EVEN VOLUME",8,true,INK3);
+    p.txt(56,bby+52,(isFinite(BE.beVol)?dec(BE.beVol,1)+" T / month":"never"),21,true,INK);
+    p.txt(56,bby+71,(isFinite(BE.beQtyKg)?inr(Math.round(BE.beQtyKg))+" kg / month":""),8.5,false,INK2);
+    p.line(300,bby+14,300,bby+80,HAIRS,0.5);
+    p.txt(316,bby+24,"BREAK-EVEN SALES",8,true,INK3);
+    p.txt(316,bby+52,(isFinite(BE.beSales)?"Rs "+cr(BE.beSales)+" Cr / mo":"--"),21,true,INK);
+    p.txt(316,bby+71,"sell below this and the month is a loss",8.5,false,INK2);
+    p.line(40,bby+90,555,bby+90,HAIRS,0.5);
+    p.txt(56,bby+105,"Contribution Rs "+dec(BE.contrib,0)+"/kg  (price - RM - variable)",8.6,true,INK);
+    p.txt(300,bby+105,"Fixed Rs "+inr(BE.fixedMo)+"/mo",8.6,true,INK);
+    p.rt(548,bby+105,"Safety +"+dec(BE.mos,0)+"% above breakeven",8.6,true,BE.mos>0?GREEN:RED);
+
+    var cy=bby+112+18;
+    p.rect(40,cy,515,20,BAND);p.txt(48,cy+14,"TO HOLD "+tgt+"% RoCE AT "+fv+"T  -  fixing ANY ONE of these is enough",9,true,INK2);
+    var chy=cy+20;
+    var rows=[
+      ["Monthly volume",(isFinite(CL.minVol)?"raise to "+dec(CL.minVol,1)+" T":"n/a"),fv+" T",CL.volOk],
+      ["Fixed cost / month","cut to Rs "+dec(CL.maxFixedMo/1e5,2)+" L","Rs "+dec(CL.fixedMoNow/1e5,2)+" L",CL.fixedOk],
+      ["Debtor days","cut to "+dec(CL.maxDeb,0)+" days",dec(CL.debNow,0)+" days",CL.debOk],
+      ["Inventory days (RM+FG)","cut to "+dec(CL.maxInv,0)+" days",dec(CL.invNow,0)+" days",CL.invOk]
+    ];
+    var rowH=24, boxH2=18+rows.length*rowH;
+    p.box(40,chy,515,boxH2,HAIR,0.9);
+    p.txt(56,chy+12,"Lever",7.6,true,INK3);p.rt(335,chy+12,"To hit "+tgt+"%",7.6,true,INK3);p.rt(455,chy+12,"You're at",7.6,true,INK3);p.rt(548,chy+12,"Status",7.6,true,INK3);
+    p.line(40,chy+18,555,chy+18,HAIR,0.7);
+    var ry=chy+18;
+    rows.forEach(function(r){
+      p.txt(56,ry+15.5,r[0],9.4,true,INK);
+      p.rt(335,ry+15.5,r[1],9,false,r[3]?INK3:INK);
+      p.rt(455,ry+15.5,r[2],9,false,INK2);
+      p.rt(548,ry+15.5,r[3]?"on track":"off",9,true,r[3]?GREEN:RED);
+      p.line(40,ry+rowH,555,ry+rowH,HAIRS,0.35);ry+=rowH;
+    });
+
+    var vy=chy+boxH2+22;
+    p.rect(40,vy,515,20,GT);p.txt(48,vy+14,"VERDICT",9,true,GREEN);
+    var vtxt;
+    if(s.roiCap>=tgt){vtxt="At "+fv+"T you already earn "+pct(s.roiCap)+", at or above your "+tgt+"% target. Hold debtors and inventory where they are and protect the contribution of Rs "+dec(BE.contrib,0)+"/kg - any slip in price or a rise in RM eats this cushion first.";}
+    else{var opts=[];if(isFinite(CL.minVol))opts.push("lift volume to ~"+dec(CL.minVol,0)+"T");opts.push("trim fixed cost to Rs "+dec(CL.maxFixedMo/1e5,1)+"L/mo");opts.push("collect in "+dec(CL.maxDeb,0)+" days");opts.push("hold "+dec(CL.maxInv,0)+" days of inventory");
+      vtxt="At "+fv+"T you earn "+pct(s.roiCap)+", below "+tgt+"%. Any single move clears it: "+opts.join("; OR ")+". Combine two and you clear "+tgt+"% with a cushion. In a weak month you may not control volume - but debtors and inventory are levers you always can pull.";}
+    var vt=p.wrap(vtxt,108);var vyy=vy+34;vt.slice(0,4).forEach(function(ln){p.txt(48,vyy,ln,9,false,INK);vyy+=13.5;});
+
+    p.line(40,815,555,815,HAIRS,0.6);p.txt(40,828,"Alu-Alu Command  -  page 2 of 4  -  control at "+fv+" T/mo  -  "+today(),8.5,false,INK3);
+  }
+
+  var p1=P();drawPage1(p1);var p2=P();drawPageCtrl(p2);var p3=P();drawPage2(p3);var p4=P();drawPage3(p4);
   var objs=[];
   objs[1]="<< /Type /Catalog /Pages 2 0 R >>";
-  objs[2]="<< /Type /Pages /Kids [3 0 R] /Count 1 >>";
+  objs[2]="<< /Type /Pages /Kids [3 0 R 7 0 R 9 0 R 11 0 R] /Count 4 >>";
   objs[3]="<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 4 0 R >>";
-  objs[4]="<< /Length "+s.length+" >>\nstream\n"+s+"endstream";
+  objs[4]="<< /Length "+p1.s.length+" >>\nstream\n"+p1.s+"endstream";
   objs[5]="<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
   objs[6]="<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>";
+  objs[7]="<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 8 0 R >>";
+  objs[8]="<< /Length "+p2.s.length+" >>\nstream\n"+p2.s+"endstream";
+  objs[9]="<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 10 0 R >>";
+  objs[10]="<< /Length "+p3.s.length+" >>\nstream\n"+p3.s+"endstream";
+  objs[11]="<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 12 0 R >>";
+  objs[12]="<< /Length "+p4.s.length+" >>\nstream\n"+p4.s+"endstream";
   var pdf="%PDF-1.4\n%\u00e2\u00e3\u00cf\u00d3\n",off=[];
-  for(var i2=1;i2<=6;i2++){off[i2]=pdf.length;pdf+=i2+" 0 obj\n"+objs[i2]+"\nendobj\n";}
-  var xp=pdf.length;pdf+="xref\n0 7\n0000000000 65535 f \n";
-  for(var j=1;j<=6;j++){pdf+=("0000000000"+off[j]).slice(-10)+" 00000 n \n";}
-  pdf+="trailer\n<< /Size 7 /Root 1 0 R >>\nstartxref\n"+xp+"\n%%EOF";
-  var bytes=new Uint8Array(pdf.length);for(var k=0;k<pdf.length;k++){bytes[k]=pdf.charCodeAt(k)&0xff;}
+  for(var k=1;k<=12;k++){off[k]=pdf.length;pdf+=k+" 0 obj\n"+objs[k]+"\nendobj\n";}
+  var xp=pdf.length;pdf+="xref\n0 13\n0000000000 65535 f \n";
+  for(var j2=1;j2<=12;j2++){pdf+=("0000000000"+off[j2]).slice(-10)+" 00000 n \n";}
+  pdf+="trailer\n<< /Size 13 /Root 1 0 R >>\nstartxref\n"+xp+"\n%%EOF";
+  var bytes=new Uint8Array(pdf.length);for(var z=0;z<pdf.length;z++){bytes[z]=pdf.charCodeAt(z)&0xff;}
   return new Blob([bytes],{type:"application/pdf"});
 }
 
