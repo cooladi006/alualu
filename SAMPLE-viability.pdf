@@ -4,13 +4,13 @@
 << /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [3 0 R 7 0 R 9 0 R 11 0 R] /Count 4 >>
+<< /Type /Pages /Kids [3 0 R 7 0 R 9 0 R] /Count 3 >>
 endobj
 3 0 obj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 4 0 R >>
 endobj
 4 0 obj
-<< /Length 14537 >>
+<< /Length 13423 >>
 stream
 0.055 0.486 0.341 rg 40.00 772.00 30.00 30.00 re f
 BT /F2 13 Tf 1.000 1.000 1.000 rg 47.00 781.00 Td (AA) Tj ET
@@ -196,34 +196,22 @@ BT /F2 10 Tf 0.055 0.486 0.341 rg 507.99 251.20 Td (74%) Tj ET
 0.910 0.910 0.925 RG 0.50 w 281.00 542.00 m 281.00 246.80 l S
 0.910 0.910 0.925 RG 0.50 w 372.00 542.00 m 372.00 246.80 l S
 0.910 0.910 0.925 RG 0.50 w 463.00 542.00 m 463.00 246.80 l S
-BT /F2 10.5 Tf 0.431 0.431 0.451 rg 40.00 228.80 Td (WHAT IT MEANS  -  achieving 30% efficiently) Tj ET
-0.839 0.839 0.855 RG 0.90 w 40.00 138.80 250.00 80.00 re S
-0.949 0.949 0.957 rg 40.00 200.80 250.00 18.00 re f
-BT /F2 9 Tf 0.431 0.431 0.451 rg 48.00 206.30 Td (Target & threshold) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 48.00 186.80 Td (On capital, the project clears 30% from 75T. At) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 48.00 175.20 Td (50T it earns 27% on Rs 10.58 Cr of total capital.) Tj ET
-0.839 0.839 0.855 RG 0.90 w 300.00 138.80 255.00 80.00 re S
-0.949 0.949 0.957 rg 300.00 200.80 255.00 18.00 re f
-BT /F2 9 Tf 0.431 0.431 0.451 rg 308.00 206.30 Td (Funding with your Rs 8 Cr) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 186.80 Td (Your equity is fixed at Rs 8 Cr; the balance is) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 175.20 Td (debt. At 50T you put in Rs 8.00 Cr and borrow Rs) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 163.60 Td (2.58 Cr \(D:E 0.32:1\), giving 32% on your own money) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 152.00 Td (- above your 30% goal.) Tj ET
-0.839 0.839 0.855 RG 0.90 w 40.00 47.80 250.00 80.00 re S
-0.949 0.949 0.957 rg 40.00 109.80 250.00 18.00 re f
-BT /F2 9 Tf 0.431 0.431 0.451 rg 48.00 115.30 Td (How far your Rs 8 Cr reaches) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 48.00 95.80 Td (On Rs 8 Cr alone you self-fund up to ~32 T/mo \(Rs) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 48.00 84.20 Td (18.66 Cr turnover\) at 16% RoCE; beyond that you) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 48.00 72.60 Td (must add debt. Full P&L on page 2.) Tj ET
-0.839 0.839 0.855 RG 0.90 w 300.00 47.80 255.00 80.00 re S
-0.949 0.949 0.957 rg 300.00 109.80 255.00 18.00 re f
-BT /F2 9 Tf 0.431 0.431 0.451 rg 308.00 115.30 Td (Levers to optimise ROI) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 95.80 Td (In order: \(1\) sell more tonnes - fixed cost) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 84.20 Td (dilutes; \(2\) squeeze the foil vendor, ~75% of RM;) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 72.60 Td (\(3\) cut the 75-day debtor cycle; \(4\) stretch) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 61.00 Td (supplier credit past 30 days.) Tj ET
+0.933 0.965 0.945 rg 40.00 192.80 515.00 20.00 re f
+BT /F2 9 Tf 0.055 0.486 0.341 rg 48.00 198.80 Td (BREAK-EVEN  -  the floor you must clear every month  \(price Rs 490/kg\)) Tj ET
+0.839 0.839 0.855 RG 0.90 w 40.00 80.80 515.00 112.00 re S
+BT /F2 8 Tf 0.604 0.604 0.627 rg 56.00 168.80 Td (BREAK-EVEN VOLUME) Tj ET
+BT /F2 21 Tf 0.114 0.114 0.122 rg 56.00 140.80 Td (20.7 T / month) Tj ET
+BT /F1 8.5 Tf 0.431 0.431 0.451 rg 56.00 121.80 Td (20,662 kg / month) Tj ET
+0.910 0.910 0.925 RG 0.50 w 300.00 178.80 m 300.00 112.80 l S
+BT /F2 8 Tf 0.604 0.604 0.627 rg 316.00 168.80 Td (BREAK-EVEN SALES) Tj ET
+BT /F2 21 Tf 0.114 0.114 0.122 rg 316.00 140.80 Td (Rs 1.01 Cr / mo) Tj ET
+BT /F1 8.5 Tf 0.431 0.431 0.451 rg 316.00 121.80 Td (sell below this and the month is a loss) Tj ET
+0.910 0.910 0.925 RG 0.50 w 40.00 102.80 m 555.00 102.80 l S
+BT /F2 8.6 Tf 0.114 0.114 0.122 rg 56.00 87.80 Td (Contribution Rs 80/kg  \(price - RM - variable\)) Tj ET
+BT /F2 8.6 Tf 0.114 0.114 0.122 rg 300.00 87.80 Td (Fixed Rs 16,55,000/mo) Tj ET
+BT /F2 8.6 Tf 0.055 0.486 0.341 rg 431.94 87.80 Td (Safety +59% above breakeven) Tj ET
 0.910 0.910 0.925 RG 0.60 w 40.00 27.00 m 555.00 27.00 l S
-BT /F1 8.5 Tf 0.604 0.604 0.627 rg 40.00 14.00 Td (Alu-Alu Command  -  page 1 of 4  -  generated 26 Jun 2026) Tj ET
+BT /F1 8.5 Tf 0.604 0.604 0.627 rg 40.00 14.00 Td (Alu-Alu Command  -  page 1 of 3  -  generated 26 Jun 2026) Tj ET
 endstream
 endobj
 5 0 obj
@@ -236,89 +224,6 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 8 0 R >>
 endobj
 8 0 obj
-<< /Length 5586 >>
-stream
-0.055 0.486 0.341 rg 40.00 772.00 30.00 30.00 re f
-BT /F2 13 Tf 1.000 1.000 1.000 rg 47.00 781.00 Td (AA) Tj ET
-BT /F2 17 Tf 0.114 0.114 0.122 rg 80.00 787.00 Td (Targets, breakeven & control) Tj ET
-BT /F1 10 Tf 0.431 0.431 0.451 rg 80.00 770.00 Td (What to hold to hit 30% RoCE  -  at 50 T/mo) Tj ET
-BT /F1 9.5 Tf 0.604 0.604 0.627 rg 502.26 775.00 Td (26 Jun 2026) Tj ET
-0.839 0.839 0.855 RG 1.00 w 40.00 754.00 m 555.00 754.00 l S
-BT /F2 9.5 Tf 0.431 0.431 0.451 rg 40.00 732.00 Td (WHERE YOU STAND  -  AT 50 T / MONTH) Tj ET
-0.929 0.965 0.945 rg 40.00 644.00 125.75 80.00 re f
-0.839 0.839 0.855 RG 0.70 w 40.00 644.00 125.75 80.00 re S
-BT /F2 7.2 Tf 0.431 0.431 0.451 rg 85.82 707.00 Td (RoCE NOW) Tj ET
-BT /F2 17 Tf 0.773 0.188 0.290 rg 85.87 664.00 Td (27%) Tj ET
-BT /F1 7 Tf 0.604 0.604 0.627 rg 84.40 652.00 Td (target 30%) Tj ET
-0.933 0.965 0.945 rg 169.75 644.00 125.75 80.00 re f
-0.839 0.839 0.855 RG 0.70 w 169.75 644.00 125.75 80.00 re S
-BT /F2 7.2 Tf 0.431 0.431 0.451 rg 202.49 707.00 Td (NET PROFIT / YR) Tj ET
-BT /F2 17 Tf 0.055 0.486 0.341 rg 191.64 664.00 Td (Rs 2.54 Cr) Tj ET
-BT /F1 7 Tf 0.604 0.604 0.627 rg 198.83 652.00 Td (after Rs 0.28 Cr int.) Tj ET
-0.933 0.965 0.945 rg 299.50 644.00 125.75 80.00 re f
-0.839 0.839 0.855 RG 0.70 w 299.50 644.00 125.75 80.00 re S
-BT /F2 7.2 Tf 0.431 0.431 0.451 rg 325.73 707.00 Td (CAPITAL EMPLOYED) Tj ET
-BT /F2 17 Tf 0.114 0.114 0.122 rg 316.66 659.00 Td (Rs 10.58 Cr) Tj ET
-0.933 0.965 0.945 rg 429.25 644.00 125.75 80.00 re f
-0.839 0.839 0.855 RG 0.70 w 429.25 644.00 125.75 80.00 re S
-BT /F2 7.2 Tf 0.431 0.431 0.451 rg 477.44 707.00 Td (RoE NOW) Tj ET
-BT /F2 17 Tf 0.055 0.486 0.341 rg 475.12 664.00 Td (32%) Tj ET
-BT /F1 7 Tf 0.604 0.604 0.627 rg 473.65 652.00 Td (clears 30%) Tj ET
-0.933 0.965 0.945 rg 40.00 600.00 515.00 20.00 re f
-BT /F2 9 Tf 0.055 0.486 0.341 rg 48.00 606.00 Td (BREAK-EVEN  -  the floor you must clear every month  \(price Rs 490/kg\)) Tj ET
-0.839 0.839 0.855 RG 0.90 w 40.00 488.00 515.00 112.00 re S
-BT /F2 8 Tf 0.604 0.604 0.627 rg 56.00 576.00 Td (BREAK-EVEN VOLUME) Tj ET
-BT /F2 21 Tf 0.114 0.114 0.122 rg 56.00 548.00 Td (20.7 T / month) Tj ET
-BT /F1 8.5 Tf 0.431 0.431 0.451 rg 56.00 529.00 Td (20,662 kg / month) Tj ET
-0.910 0.910 0.925 RG 0.50 w 300.00 586.00 m 300.00 520.00 l S
-BT /F2 8 Tf 0.604 0.604 0.627 rg 316.00 576.00 Td (BREAK-EVEN SALES) Tj ET
-BT /F2 21 Tf 0.114 0.114 0.122 rg 316.00 548.00 Td (Rs 1.01 Cr / mo) Tj ET
-BT /F1 8.5 Tf 0.431 0.431 0.451 rg 316.00 529.00 Td (sell below this and the month is a loss) Tj ET
-0.910 0.910 0.925 RG 0.50 w 40.00 510.00 m 555.00 510.00 l S
-BT /F2 8.6 Tf 0.114 0.114 0.122 rg 56.00 495.00 Td (Contribution Rs 80/kg  \(price - RM - variable\)) Tj ET
-BT /F2 8.6 Tf 0.114 0.114 0.122 rg 300.00 495.00 Td (Fixed Rs 16,55,000/mo) Tj ET
-BT /F2 8.6 Tf 0.055 0.486 0.341 rg 431.94 495.00 Td (Safety +59% above breakeven) Tj ET
-0.949 0.949 0.957 rg 40.00 450.00 515.00 20.00 re f
-BT /F2 9 Tf 0.431 0.431 0.451 rg 48.00 456.00 Td (TO HOLD 30% RoCE AT 50T  -  fixing ANY ONE of these is enough) Tj ET
-0.839 0.839 0.855 RG 0.90 w 40.00 336.00 515.00 114.00 re S
-BT /F2 7.6 Tf 0.604 0.604 0.627 rg 56.00 438.00 Td (Lever) Tj ET
-BT /F2 7.6 Tf 0.604 0.604 0.627 rg 295.35 438.00 Td (To hit 30%) Tj ET
-BT /F2 7.6 Tf 0.604 0.604 0.627 rg 422.96 438.00 Td (You're at) Tj ET
-BT /F2 7.6 Tf 0.604 0.604 0.627 rg 523.98 438.00 Td (Status) Tj ET
-0.839 0.839 0.855 RG 0.70 w 40.00 432.00 m 555.00 432.00 l S
-BT /F2 9.4 Tf 0.114 0.114 0.122 rg 56.00 416.50 Td (Monthly volume) Tj ET
-BT /F1 9 Tf 0.114 0.114 0.122 rg 272.54 416.50 Td (raise to 60.5 T) Tj ET
-BT /F1 9 Tf 0.431 0.431 0.451 rg 436.55 416.50 Td (50 T) Tj ET
-BT /F2 9 Tf 0.773 0.188 0.290 rg 534.50 416.50 Td (off) Tj ET
-0.910 0.910 0.925 RG 0.35 w 40.00 408.00 m 555.00 408.00 l S
-BT /F2 9.4 Tf 0.114 0.114 0.122 rg 56.00 392.50 Td (Fixed cost / month) Tj ET
-BT /F1 9 Tf 0.114 0.114 0.122 rg 263.59 392.50 Td (cut to Rs 13.59 L) Tj ET
-BT /F1 9 Tf 0.431 0.431 0.451 rg 411.10 392.50 Td (Rs 16.55 L) Tj ET
-BT /F2 9 Tf 0.773 0.188 0.290 rg 534.50 392.50 Td (off) Tj ET
-0.910 0.910 0.925 RG 0.35 w 40.00 384.00 m 555.00 384.00 l S
-BT /F2 9.4 Tf 0.114 0.114 0.122 rg 56.00 368.50 Td (Debtor days) Tj ET
-BT /F1 9 Tf 0.114 0.114 0.122 rg 276.99 368.50 Td (cut to 60 days) Tj ET
-BT /F1 9 Tf 0.431 0.431 0.451 rg 424.49 368.50 Td (75 days) Tj ET
-BT /F2 9 Tf 0.773 0.188 0.290 rg 534.50 368.50 Td (off) Tj ET
-0.910 0.910 0.925 RG 0.35 w 40.00 360.00 m 555.00 360.00 l S
-BT /F2 9.4 Tf 0.114 0.114 0.122 rg 56.00 344.50 Td (Inventory days \(RM+FG\)) Tj ET
-BT /F1 9 Tf 0.114 0.114 0.122 rg 276.99 344.50 Td (cut to 28 days) Tj ET
-BT /F1 9 Tf 0.431 0.431 0.451 rg 424.49 344.50 Td (45 days) Tj ET
-BT /F2 9 Tf 0.773 0.188 0.290 rg 534.50 344.50 Td (off) Tj ET
-0.910 0.910 0.925 RG 0.35 w 40.00 336.00 m 555.00 336.00 l S
-0.933 0.965 0.945 rg 40.00 294.00 515.00 20.00 re f
-BT /F2 9 Tf 0.055 0.486 0.341 rg 48.00 300.00 Td (VERDICT) Tj ET
-BT /F1 9 Tf 0.114 0.114 0.122 rg 48.00 280.00 Td (At 50T you earn 27%, below 30%. Any single move clears it: lift volume to ~60T; OR trim fixed cost to Rs) Tj ET
-BT /F1 9 Tf 0.114 0.114 0.122 rg 48.00 266.50 Td (13.6L/mo; OR collect in 60 days; OR hold 28 days of inventory. Combine two and you clear 30% with a cushion.) Tj ET
-BT /F1 9 Tf 0.114 0.114 0.122 rg 48.00 253.00 Td (In a weak month you may not control volume - but debtors and inventory are levers you always can pull.) Tj ET
-0.910 0.910 0.925 RG 0.60 w 40.00 27.00 m 555.00 27.00 l S
-BT /F1 8.5 Tf 0.604 0.604 0.627 rg 40.00 14.00 Td (Alu-Alu Command  -  page 2 of 4  -  control at 50 T/mo  -  26 Jun 2026) Tj ET
-endstream
-endobj
-9 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 10 0 R >>
-endobj
-10 0 obj
 << /Length 10620 >>
 stream
 0.055 0.486 0.341 rg 40.00 772.00 30.00 30.00 re f
@@ -465,13 +370,13 @@ BT /F1 8.4 Tf 0.604 0.604 0.627 rg 48.00 83.50 Td (that, the outside need is a b
 BT /F1 8.4 Tf 0.604 0.604 0.627 rg 48.00 72.00 Td (working-capital finance, not permanent debt. Suppliers \(30d\) and salaries are paid on their due dates) Tj ET
 BT /F1 8.4 Tf 0.604 0.604 0.627 rg 48.00 60.50 Td (throughout.) Tj ET
 0.910 0.910 0.925 RG 0.60 w 40.00 27.00 m 555.00 27.00 l S
-BT /F1 8.5 Tf 0.604 0.604 0.627 rg 40.00 14.00 Td (Alu-Alu Command  -  page 3 of 4  -  detail at 50 T/mo  -  26 Jun 2026) Tj ET
+BT /F1 8.5 Tf 0.604 0.604 0.627 rg 40.00 14.00 Td (Alu-Alu Command  -  page 2 of 3  -  detail at 50 T/mo  -  26 Jun 2026) Tj ET
 endstream
 endobj
-11 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 12 0 R >>
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 10 0 R >>
 endobj
-12 0 obj
+10 0 obj
 << /Length 11540 >>
 stream
 0.055 0.486 0.341 rg 40.00 772.00 30.00 30.00 re f
@@ -641,26 +546,24 @@ BT /F1 9.6 Tf 0.114 0.114 0.122 rg 48.00 106.50 Td (drives the conversion cost d
 BT /F1 9.6 Tf 0.114 0.114 0.122 rg 48.00 92.00 Td (price at Rs 490/kg, every extra tonne widens the gross margin - the single biggest lever on this) Tj ET
 BT /F1 9.6 Tf 0.114 0.114 0.122 rg 48.00 77.50 Td (project.) Tj ET
 0.910 0.910 0.925 RG 0.60 w 40.00 27.00 m 555.00 27.00 l S
-BT /F1 8.5 Tf 0.604 0.604 0.627 rg 40.00 14.00 Td (Alu-Alu Command  -  page 4 of 4  -  all four volumes  -  26 Jun 2026) Tj ET
+BT /F1 8.5 Tf 0.604 0.604 0.627 rg 40.00 14.00 Td (Alu-Alu Command  -  page 3 of 3  -  all four volumes  -  26 Jun 2026) Tj ET
 endstream
 endobj
 xref
-0 13
+0 11
 0000000000 65535 f 
 0000000015 00000 n 
 0000000064 00000 n 
-0000000140 00000 n 
-0000000276 00000 n 
-0000014865 00000 n 
-0000014962 00000 n 
-0000015064 00000 n 
-0000015200 00000 n 
-0000020837 00000 n 
-0000020974 00000 n 
-0000031647 00000 n 
-0000031785 00000 n 
+0000000133 00000 n 
+0000000269 00000 n 
+0000013744 00000 n 
+0000013841 00000 n 
+0000013943 00000 n 
+0000014079 00000 n 
+0000024751 00000 n 
+0000024888 00000 n 
 trailer
-<< /Size 13 /Root 1 0 R >>
+<< /Size 11 /Root 1 0 R >>
 startxref
-43378
+36481
 %%EOF

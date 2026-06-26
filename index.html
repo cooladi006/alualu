@@ -708,15 +708,21 @@ function buildPDF(M){
     p.box(40,mtop,515,totalH,HAIR,0.9);
     [EDG[0],EDG[1],EDG[2],EDG[3]].forEach(function(xx){p.line(xx,mtop,xx,mtop+totalH,HAIRS,0.5);});
 
-    var ay2=mtop+totalH+18, cats=analysisCategories(M), bx=[40,300], bw=[250,255], cbh=80, gap=11, cby=ay2+10;
-    p.txt(40,ay2,"WHAT IT MEANS  -  achieving "+tgt+"% efficiently",10.5,true,INK2);
-    cats.forEach(function(cat,idx){
-      var cx=bx[idx%2], cw=bw[idx%2], cy=cby+Math.floor(idx/2)*(cbh+gap);
-      p.box(cx,cy,cw,cbh,HAIR,0.9);p.rect(cx,cy,cw,18,BAND);p.txt(cx+8,cy+12.5,cat.t,9,true,INK2);
-      var ls=p.wrap(san(cat.b),50), ly=cy+32;
-      ls.slice(0,4).forEach(function(ln){p.txt(cx+8,ly,ln,8.9,false,INK);ly+=11.6;});
-    });
-    p.line(40,815,555,815,HAIRS,0.6);p.txt(40,828,"Alu-Alu Command  -  page 1 of 4  -  generated "+today(),8.5,false,INK3);
+    var by=mtop+totalH+34, BE=breakeven(M);
+    p.rect(40,by,515,20,GT);p.txt(48,by+14,"BREAK-EVEN  -  the floor you must clear every month  (price Rs "+dec(BE.price,0)+"/kg)",9,true,GREEN);
+    var bby=by+20;p.box(40,bby,515,112,HAIR,0.9);
+    p.txt(56,bby+24,"BREAK-EVEN VOLUME",8,true,INK3);
+    p.txt(56,bby+52,(isFinite(BE.beVol)?dec(BE.beVol,1)+" T / month":"never"),21,true,INK);
+    p.txt(56,bby+71,(isFinite(BE.beQtyKg)?inr(Math.round(BE.beQtyKg))+" kg / month":""),8.5,false,INK2);
+    p.line(300,bby+14,300,bby+80,HAIRS,0.5);
+    p.txt(316,bby+24,"BREAK-EVEN SALES",8,true,INK3);
+    p.txt(316,bby+52,(isFinite(BE.beSales)?"Rs "+cr(BE.beSales)+" Cr / mo":"--"),21,true,INK);
+    p.txt(316,bby+71,"sell below this and the month is a loss",8.5,false,INK2);
+    p.line(40,bby+90,555,bby+90,HAIRS,0.5);
+    p.txt(56,bby+105,"Contribution Rs "+dec(BE.contrib,0)+"/kg  (price - RM - variable)",8.6,true,INK);
+    p.txt(300,bby+105,"Fixed Rs "+inr(BE.fixedMo)+"/mo",8.6,true,INK);
+    p.rt(548,bby+105,"Safety +"+dec(BE.mos,0)+"% above breakeven",8.6,true,BE.mos>0?GREEN:RED);
+    p.line(40,815,555,815,HAIRS,0.6);p.txt(40,828,"Alu-Alu Command  -  page 1 of 3  -  generated "+today(),8.5,false,INK3);
   }
 
   /* ===== PAGE 2 : CAPITAL & SELF-FUNDING (dashboard) ===== */
@@ -808,7 +814,7 @@ function buildPDF(M){
     });
     var vy=gyy+13;vt.forEach(function(ln){p.txt(48,vy,ln,8.4,false,INK3);vy+=11.5;});
 
-    p.line(40,815,555,815,HAIRS,0.6);p.txt(40,828,"Alu-Alu Command  -  page 3 of 4  -  detail at "+fv+" T/mo  -  "+today(),8.5,false,INK3);
+    p.line(40,815,555,815,HAIRS,0.6);p.txt(40,828,"Alu-Alu Command  -  page 2 of 3  -  detail at "+fv+" T/mo  -  "+today(),8.5,false,INK3);
   }
 
   /* ===== PAGE 3 : MONTHLY COST BREAK-UP ===== */
@@ -851,77 +857,13 @@ function buildPDF(M){
     var note=p.wrap("Fixed cost is the same rupees whether you sell little or much, so spreading it over more kilos is what drives the conversion cost down from Rs "+dec(T[0].conv,2)+"/kg at "+nf(S.cols[0].vol)+"T to Rs "+dec(T[T.length-1].conv,2)+"/kg at "+nf(S.cols[T.length-1].vol)+"T. With RM at Rs "+dec(b.finalRM,0)+"/kg and price at Rs "+dec(nf(S.price),0)+"/kg, every extra tonne widens the gross margin - the single biggest lever on this project.",104);
     var nyy=ny+38;note.forEach(function(ln){p.txt(48,nyy,ln,9.6,false,INK);nyy+=14.5;});
 
-    p.line(40,815,555,815,HAIRS,0.6);p.txt(40,828,"Alu-Alu Command  -  page 4 of 4  -  all four volumes  -  "+today(),8.5,false,INK3);
+    p.line(40,815,555,815,HAIRS,0.6);p.txt(40,828,"Alu-Alu Command  -  page 3 of 3  -  all four volumes  -  "+today(),8.5,false,INK3);
   }
 
-  /* ===== PAGE 2 : TARGETS, BREAKEVEN & CONTROL ===== */
-  function drawPageCtrl(p){
-    var s=sel, BE=breakeven(M), CL=controlLimits(M), fv=nf(S.cols[S.focus].vol), tgt=nf(S.targetROI);
-    p.rect(40,40,30,30,GREEN);p.txt(47,61,"AA",13,true,WHITE);
-    p.txt(80,55,"Targets, breakeven & control",17,true,INK);
-    p.txt(80,72,"What to hold to hit "+tgt+"% RoCE  -  at "+fv+" T/mo",10,false,INK2);
-    p.rt(555,67,today(),9.5,false,INK3);p.line(40,88,555,88,HAIR,1);
-
-    p.txt(40,110,"WHERE YOU STAND  -  AT "+fv+" T / MONTH",9.5,true,INK2);
-    tileRow(p,40,118,515,[
-      {lab:"RoCE NOW",val:pct(s.roiCap),sub:"target "+tgt+"%",col:s.roiCap>=tgt?GREEN:RED,hl:true},
-      {lab:"NET PROFIT / YR",val:"Rs "+cr(s.patCap)+" Cr",sub:"after Rs "+cr(s.interestCap)+" Cr int.",col:s.patCap>0?GREEN:RED},
-      {lab:"CAPITAL EMPLOYED",val:"Rs "+cr(s.I)+" Cr"},
-      {lab:"RoE NOW",val:pct(s.roeCap),sub:(s.roeCap>=tgt?"clears ":"below ")+tgt+"%",col:s.roeCap>=tgt?GREEN:RED}
-    ],4,80,17);
-
-    var by=222;
-    p.rect(40,by,515,20,GT);p.txt(48,by+14,"BREAK-EVEN  -  the floor you must clear every month  (price Rs "+dec(BE.price,0)+"/kg)",9,true,GREEN);
-    var bby=by+20;p.box(40,bby,515,112,HAIR,0.9);
-    p.txt(56,bby+24,"BREAK-EVEN VOLUME",8,true,INK3);
-    p.txt(56,bby+52,(isFinite(BE.beVol)?dec(BE.beVol,1)+" T / month":"never"),21,true,INK);
-    p.txt(56,bby+71,(isFinite(BE.beQtyKg)?inr(Math.round(BE.beQtyKg))+" kg / month":""),8.5,false,INK2);
-    p.line(300,bby+14,300,bby+80,HAIRS,0.5);
-    p.txt(316,bby+24,"BREAK-EVEN SALES",8,true,INK3);
-    p.txt(316,bby+52,(isFinite(BE.beSales)?"Rs "+cr(BE.beSales)+" Cr / mo":"--"),21,true,INK);
-    p.txt(316,bby+71,"sell below this and the month is a loss",8.5,false,INK2);
-    p.line(40,bby+90,555,bby+90,HAIRS,0.5);
-    p.txt(56,bby+105,"Contribution Rs "+dec(BE.contrib,0)+"/kg  (price - RM - variable)",8.6,true,INK);
-    p.txt(300,bby+105,"Fixed Rs "+inr(BE.fixedMo)+"/mo",8.6,true,INK);
-    p.rt(548,bby+105,"Safety +"+dec(BE.mos,0)+"% above breakeven",8.6,true,BE.mos>0?GREEN:RED);
-
-    var cy=bby+112+18;
-    p.rect(40,cy,515,20,BAND);p.txt(48,cy+14,"TO HOLD "+tgt+"% RoCE AT "+fv+"T  -  fixing ANY ONE of these is enough",9,true,INK2);
-    var chy=cy+20;
-    var rows=[
-      ["Monthly volume",(isFinite(CL.minVol)?"raise to "+dec(CL.minVol,1)+" T":"n/a"),fv+" T",CL.volOk],
-      ["Fixed cost / month","cut to Rs "+dec(CL.maxFixedMo/1e5,2)+" L","Rs "+dec(CL.fixedMoNow/1e5,2)+" L",CL.fixedOk],
-      ["Debtor days","cut to "+dec(CL.maxDeb,0)+" days",dec(CL.debNow,0)+" days",CL.debOk],
-      ["Inventory days (RM+FG)","cut to "+dec(CL.maxInv,0)+" days",dec(CL.invNow,0)+" days",CL.invOk]
-    ];
-    var rowH=24, boxH2=18+rows.length*rowH;
-    p.box(40,chy,515,boxH2,HAIR,0.9);
-    p.txt(56,chy+12,"Lever",7.6,true,INK3);p.rt(335,chy+12,"To hit "+tgt+"%",7.6,true,INK3);p.rt(455,chy+12,"You're at",7.6,true,INK3);p.rt(548,chy+12,"Status",7.6,true,INK3);
-    p.line(40,chy+18,555,chy+18,HAIR,0.7);
-    var ry=chy+18;
-    rows.forEach(function(r){
-      p.txt(56,ry+15.5,r[0],9.4,true,INK);
-      p.rt(335,ry+15.5,r[1],9,false,r[3]?INK3:INK);
-      p.rt(455,ry+15.5,r[2],9,false,INK2);
-      p.rt(548,ry+15.5,r[3]?"on track":"off",9,true,r[3]?GREEN:RED);
-      p.line(40,ry+rowH,555,ry+rowH,HAIRS,0.35);ry+=rowH;
-    });
-
-    var vy=chy+boxH2+22;
-    p.rect(40,vy,515,20,GT);p.txt(48,vy+14,"VERDICT",9,true,GREEN);
-    var vtxt;
-    if(s.roiCap>=tgt){vtxt="At "+fv+"T you already earn "+pct(s.roiCap)+", at or above your "+tgt+"% target. Hold debtors and inventory where they are and protect the contribution of Rs "+dec(BE.contrib,0)+"/kg - any slip in price or a rise in RM eats this cushion first.";}
-    else{var opts=[];if(isFinite(CL.minVol))opts.push("lift volume to ~"+dec(CL.minVol,0)+"T");opts.push("trim fixed cost to Rs "+dec(CL.maxFixedMo/1e5,1)+"L/mo");opts.push("collect in "+dec(CL.maxDeb,0)+" days");opts.push("hold "+dec(CL.maxInv,0)+" days of inventory");
-      vtxt="At "+fv+"T you earn "+pct(s.roiCap)+", below "+tgt+"%. Any single move clears it: "+opts.join("; OR ")+". Combine two and you clear "+tgt+"% with a cushion. In a weak month you may not control volume - but debtors and inventory are levers you always can pull.";}
-    var vt=p.wrap(vtxt,108);var vyy=vy+34;vt.slice(0,4).forEach(function(ln){p.txt(48,vyy,ln,9,false,INK);vyy+=13.5;});
-
-    p.line(40,815,555,815,HAIRS,0.6);p.txt(40,828,"Alu-Alu Command  -  page 2 of 4  -  control at "+fv+" T/mo  -  "+today(),8.5,false,INK3);
-  }
-
-  var p1=P();drawPage1(p1);var p2=P();drawPageCtrl(p2);var p3=P();drawPage2(p3);var p4=P();drawPage3(p4);
+  var p1=P();drawPage1(p1);var p2=P();drawPage2(p2);var p3=P();drawPage3(p3);
   var objs=[];
   objs[1]="<< /Type /Catalog /Pages 2 0 R >>";
-  objs[2]="<< /Type /Pages /Kids [3 0 R 7 0 R 9 0 R 11 0 R] /Count 4 >>";
+  objs[2]="<< /Type /Pages /Kids [3 0 R 7 0 R 9 0 R] /Count 3 >>";
   objs[3]="<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 4 0 R >>";
   objs[4]="<< /Length "+p1.s.length+" >>\nstream\n"+p1.s+"endstream";
   objs[5]="<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
@@ -930,13 +872,11 @@ function buildPDF(M){
   objs[8]="<< /Length "+p2.s.length+" >>\nstream\n"+p2.s+"endstream";
   objs[9]="<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 10 0 R >>";
   objs[10]="<< /Length "+p3.s.length+" >>\nstream\n"+p3.s+"endstream";
-  objs[11]="<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 12 0 R >>";
-  objs[12]="<< /Length "+p4.s.length+" >>\nstream\n"+p4.s+"endstream";
   var pdf="%PDF-1.4\n%\u00e2\u00e3\u00cf\u00d3\n",off=[];
-  for(var k=1;k<=12;k++){off[k]=pdf.length;pdf+=k+" 0 obj\n"+objs[k]+"\nendobj\n";}
-  var xp=pdf.length;pdf+="xref\n0 13\n0000000000 65535 f \n";
-  for(var j2=1;j2<=12;j2++){pdf+=("0000000000"+off[j2]).slice(-10)+" 00000 n \n";}
-  pdf+="trailer\n<< /Size 13 /Root 1 0 R >>\nstartxref\n"+xp+"\n%%EOF";
+  for(var k=1;k<=10;k++){off[k]=pdf.length;pdf+=k+" 0 obj\n"+objs[k]+"\nendobj\n";}
+  var xp=pdf.length;pdf+="xref\n0 11\n0000000000 65535 f \n";
+  for(var j2=1;j2<=10;j2++){pdf+=("0000000000"+off[j2]).slice(-10)+" 00000 n \n";}
+  pdf+="trailer\n<< /Size 11 /Root 1 0 R >>\nstartxref\n"+xp+"\n%%EOF";
   var bytes=new Uint8Array(pdf.length);for(var z=0;z<pdf.length;z++){bytes[z]=pdf.charCodeAt(z)&0xff;}
   return new Blob([bytes],{type:"application/pdf"});
 }
