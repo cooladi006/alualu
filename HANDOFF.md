@@ -60,27 +60,31 @@ All money is held in **rupees** internally; `cr(x)` formats to crore (÷1e7, 2 d
 formats Indian-grouped rupees, `dec(x,n)` fixed decimals, `pct(x)` percent, `nf(x)` parses a
 numeric field.
 
-### Raw material cost build-up
+### Raw material cost build-up (REV 11 economics)
 - `GSM = thickness(µm) × density(g/cm³)`; `cost/m² = (GSM/1000) × rate`.
-- Substrates (defaults): **OPA** (25µm, 1.15, ₹240/kg), **Aluminium foil 8021** (50µm, 2.71,
-  ₹520/kg — ~75% of RM cost), **PVC** (60µm, 1.35, ₹170/kg).
-- **Adhesive** blend ratio 100:15:100 (KUB130 ₹351 : Hardener/NeoForce ₹350 : Ethyl Acetate ₹106),
-  ~50 kg mix/tonne → blended ≈ ₹237/kg, ~6.74 dry GSM, adhesive ≈ ₹11.85/kg.
+- Substrates (defaults): **OPA** (25µm, 1.15, ₹260/kg), **Aluminium foil 8021** (50µm, 2.71,
+  ₹560/kg — **72.49% of RM cost**), **PVC** (60µm, 1.35, ₹220/kg).
+- **Adhesive** blend ratio 100:15:100 (KUB130 ₹420 : Hardener/NeoForce ₹420 : Ethyl Acetate ₹115),
+  ~50 kg mix/tonne → blended ≈ **₹278/kg**, ~6.74 dry GSM, adhesive ≈ ₹13.9/kg.
 - `yield ≈ 0.252 kg/m²`; `cost/kg = cost/m² ÷ yield`.
-- **Ideal RM ≈ ₹373/kg**, then **finalRM = ideal × (1 + wastage%)**; at 6% wastage → **₹396/kg
+- **Ideal RM ≈ ₹415.41/kg**, then **finalRM = ideal × (1 + wastage%)**; at 6% wastage → **₹440.34/kg
   inclusive of wastage** (this is the number that drives the whole report).
-- Selling price default **₹490/kg**.
+- Selling price default **₹535/kg**.
 
 ### P&L (per volume column)
 `salesYr`, `rmYr`, `fixedYr`, `varYr`, `ebit` (operating profit), `patEq = ebit×(1−tax)`.
 
-### Working capital (drives the funding need; all editable cycle days)
-- `rmInv = annualRM/365 × rmDays` (30)
-- `fgInv = annualCOGS/365 × fgDays` (15); `annualCOGS = salesYr − ebit`
-- `recv (debtors) = annualSales/365 × debDays` (75)
-- `pay (creditors) = annualRM/365 × credDays` (30)
-- `netWC = rmInv + fgInv + recv − pay` (≈ ₹7.13 Cr at 50T)
-- **Cash conversion cycle = rmDays + fgDays + debDays − credDays = 90 days** by default.
+### Working capital — GST-blocked across the whole cycle (REV 11)
+GST (`gst`, default 18%) is paid on foil/RM at purchase but recovered only when customers
+pay, so it sits in **every** WC stage. All stages are GST-inclusive:
+- `rmInv  = annualRM   × (1+gst) × rmStockDays/365` (30)
+- `fgInv  = annualCOGS × (1+gst) × fgDays/365` (15); `annualCOGS = salesYr − ebit`
+- `recv   = annualSales × (1+gst) × debtorDays/365` (90)
+- `pay    = (nonFoilRM × otherCreditorDays + foilRM × foilCreditDays) × (1+gst) / 365`
+  where `foilShareOfRM = 0.7249`; **foil is bought on advance (`foilCreditDays = 0`)** so it
+  earns no supplier credit; non-foil RM gets `otherCreditorDays` (10).
+- `netWC = rmInv + fgInv + recv − pay` (≈ **₹13.09 Cr at 50T** with GST).
+- **Cash conversion cycle = rmStockDays + fgDays + debtorDays − otherCreditorDays = 125 days.**
 
 ### Capital & returns
 - **Fixed assets = ₹3.45 Cr** (11 line items: machine 1.25, slitting 0.30, HVAC 0.25, QC lab 0.20,

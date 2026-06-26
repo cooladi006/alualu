@@ -113,18 +113,18 @@ function mkCols(){return DEFVOL.map(function(v,i){return{vol:String(v),fixed:FIX
 
 var S={
   substrates:[
-    {name:"OPA",thickness:"25",density:"1.15",sel:0,vendors:[{name:"Vendor A",rate:"240"}]},
-    {name:"Aluminium foil 8021",thickness:"50",density:"2.71",sel:0,vendors:[{name:"Vendor A",rate:"520"}]},
-    {name:"PVC",thickness:"60",density:"1.35",sel:0,vendors:[{name:"Vendor A",rate:"170"}]}
+    {name:"OPA",thickness:"25",density:"1.15",sel:0,vendors:[{name:"Vendor A",rate:"260"}]},
+    {name:"Aluminium foil 8021",thickness:"50",density:"2.71",sel:0,vendors:[{name:"Hindalco",rate:"560"}]},
+    {name:"PVC",thickness:"60",density:"1.35",sel:0,vendors:[{name:"Vendor A",rate:"220"}]}
   ],
   adh:{gsm:"6.74",wetMixPerTonne:"50",comps:[
-    {name:"KUB130",parts:"100",sel:0,vendors:[{name:"Vendor A",rate:"351"}]},
-    {name:"Hardener (Neo Force)",parts:"15",sel:0,vendors:[{name:"Vendor A",rate:"350"}]},
-    {name:"Ethyl acetate",parts:"100",sel:0,vendors:[{name:"Vendor A",rate:"106"}]}
+    {name:"KUB130",parts:"100",sel:0,vendors:[{name:"Vendor A",rate:"420"}]},
+    {name:"Hardener (Neo Force)",parts:"15",sel:0,vendors:[{name:"Vendor A",rate:"420"}]},
+    {name:"Ethyl acetate",parts:"100",sel:0,vendors:[{name:"Vendor A",rate:"115"}]}
   ]},
-  wastage:"6",price:"490",cols:mkCols(),focus:1,assets:ASSETS0.map(function(a){return{name:a[0],amt:String(a[1])};}),
-  rmDays:"30",fgDays:"15",debDays:"75",credDays:"30",targetROI:"30",tax:"0",interest:"11",equityCap:"8",maxDE:"2",revision:"10",
-  actuals:{on:false,month:"This month",vol:"50",price:"490",rm:"396",fixedMo:"1655000",varMo:"700000",debDays:"75",rmDays:"30",fgDays:"15",credDays:"30"},
+  wastage:"6",price:"535",cols:mkCols(),focus:1,assets:ASSETS0.map(function(a){return{name:a[0],amt:String(a[1])};}),
+  rmDays:"30",fgDays:"15",debDays:"90",credDays:"10",foilCreditDays:"0",gst:"18",foilShareOfRM:"0.7249",targetROI:"30",tax:"0",interest:"12",equityCap:"8",maxDE:"2",revision:"11",
+  actuals:{on:false,month:"This month",vol:"50",price:"535",rm:"440",fixedMo:"1655000",varMo:"700000",debDays:"90",rmDays:"30",fgDays:"15",credDays:"10"},
   tab:"dashboard",screen:null,rep:"viability"
 };
 
@@ -164,7 +164,9 @@ function compute(){
     var ebit=salesYr-rmYr-fixedYr-varYr;
     var patEq=ebit*(1-t),netKg=kgYr?patEq/kgYr:0;
     var totCostKg=finalRM+conv,aCOGS=kgYr*totCostKg;
-    var rmInv=rmYr/365*nf(S.rmDays),fgInv=aCOGS/365*nf(S.fgDays),recv=salesYr/365*nf(S.debDays),pay=rmYr/365*nf(S.credDays);
+    var gstF=1+nf(S.gst)/100,foilSh=nf(S.foilShareOfRM);
+    var rmInv=rmYr*gstF/365*nf(S.rmDays),fgInv=aCOGS*gstF/365*nf(S.fgDays),recv=salesYr*gstF/365*nf(S.debDays);
+    var pay=(rmYr*(1-foilSh)*nf(S.credDays)+rmYr*foilSh*nf(S.foilCreditDays))*gstF/365;
     var wc=rmInv+fgInv+recv-pay,I=fixedAssets+wc;
     var roiCap=I?patEq/I*100:0,pass=roiCap>=nf(S.targetROI);
     var denom=g-(1-t)*r,Etar=null,Dtar=null,DEtar=null,leverOK=true;
@@ -604,6 +606,53 @@ function computeActual(M){
     debDays:nf(A.debDays),invDays:invDays,roceOk:roiCap>=tgt-0.05,roeOk:roeCap>=tgt-0.05,beOk:isFinite(beVol)&&vol>beVol};
 }
 
+/* ---------- REV 11 lever engine (equity-driven, GST-blocked WC) ---------- */
+function leverEngine(M){
+  var KGT=12000, col=S.cols[S.focus], fv=focusVol();
+  var base0={price:nf(S.price),idealRM:M.base.idealCostKg,wastagePct:nf(S.wastage),rmDelta:0,
+    foilSh:nf(S.foilShareOfRM),fixedAssets:M.base.fixedAssets/1e7,equityCap:nf(S.equityCap),gst:nf(S.gst),
+    debtorDays:nf(S.debDays),foilCreditDays:nf(S.foilCreditDays),otherCreditorDays:nf(S.credDays),
+    rmStockDays:nf(S.rmDays),fgDays:nf(S.fgDays),varPerKg:(fv>0?sum(col.variable)/(fv*1000):0),
+    fixedCostCrYr:sum(col.fixed)*12/1e7,varCutPctOfSales:0,scaleVol:50};
+  function clone(c){var o={};for(var k in c)o[k]=c[k];return o;}
+  function RMof(c){return c.idealRM*(1+c.wastagePct/100)+c.rmDelta;}
+  function varKg(c){return c.varPerKg-(c.varCutPctOfSales/100)*c.price;}
+  function contribKg(c){return c.price-RMof(c)-varKg(c);}
+  function wcPerT(c){var RM=RMof(c),g=1+c.gst/100,sales=KGT*c.price,rm=KGT*RM,vv=KGT*varKg(c);
+    var RMs=rm*g*c.rmStockDays/365,FG=(rm+vv)*g*c.fgDays/365,Deb=sales*g*c.debtorDays/365;
+    var Cred=(rm*(1-c.foilSh)*c.otherCreditorDays+rm*c.foilSh*c.foilCreditDays)*g/365;
+    return (RMs+FG+Deb-Cred)/1e7;}
+  function model(c){var w=wcPerT(c),maxT=w>0?(c.equityCap-c.fixedAssets)/w:0;
+    var op=maxT*KGT*contribKg(c)/1e7-c.fixedCostCrYr,roce=c.equityCap?op/c.equityCap*100:0;
+    return {wcPerT:w,maxT:maxT,op:op,roce:roce,salesMo:maxT*1000*c.price/1e7,contrib:contribKg(c),RM:RMof(c)};}
+  var base=model(base0);
+  var LEVERS=[
+    {name:"RM cost / kg",change:"−15 → "+dec(base.RM-15,0),apply:function(c){c.rmDelta-=15;}},
+    {name:"Fixed assets",change:"−0.75 Cr",apply:function(c){c.fixedAssets-=0.75;}},
+    {name:"Fixed cost",change:"−2 L/month",apply:function(c){c.fixedCostCrYr-=0.24;}},
+    {name:"Debtor days",change:"90 → 75 d",apply:function(c){c.debtorDays=75;}},
+    {name:"Selling price / kg",change:"+10 → 545",apply:function(c){c.price+=10;}},
+    {name:"RM stock days",change:"30 → 20 d",apply:function(c){c.rmStockDays=20;}},
+    {name:"Wastage",change:"6% → 5%",apply:function(c){c.wastagePct=5;}},
+    {name:"Foil credit days",change:"0 → 10 d",apply:function(c){c.foilCreditDays=10;}},
+    {name:"Variable cost",change:"−0.5% of sales",apply:function(c){c.varCutPctOfSales=0.5;}},
+    {name:"FG stock days",change:"15 → 10 d",apply:function(c){c.fgDays=10;}}
+  ];
+  var rows=LEVERS.map(function(L){var c=clone(base0);L.apply(c);var m=model(c);
+    return {name:L.name,change:L.change,wcFreed:(base.wcPerT-m.wcPerT)*m.maxT,maxT:m.maxT,salesMo:m.salesMo,roce:m.roce,d:m.roce-base.roce};});
+  rows.sort(function(a,b){return b.roce-a.roce;});
+  var allC=clone(base0);LEVERS.forEach(function(L){L.apply(allC);});var allM=model(allC);
+  var T50=base0.scaleVol,wc50=allM.wcPerT*T50,cap50=allC.fixedAssets+wc50;
+  var op50=T50*KGT*contribKg(allC)/1e7-allC.fixedCostCrYr;
+  var goal={contrib:contribKg(allC),wcPerT:allM.wcPerT,freed:(base.wcPerT-allM.wcPerT)*allM.maxT,maxT:allM.maxT,
+    salesMo:allM.salesMo,roce:allM.roce,clears:allM.roce>=nf(S.targetROI),
+    scaleVol:T50,scaleCap:cap50,scaleOp:op50,scaleRoce:cap50?op50/cap50*100:0};
+  var vT=base.maxT+15,wcv=base.wcPerT*vT,capv=base0.fixedAssets+wcv,opv=vT*KGT*base.contrib/1e7-base0.fixedCostCrYr;
+  var volRow={name:"Volume +15 T",change:"needs +Rs "+dec(base.wcPerT*15,2)+" Cr funding",wcFreed:-base.wcPerT*15,
+    maxT:vT,salesMo:vT*1000*base0.price/1e7,roce:capv?opv/capv*100:0,d:(capv?opv/capv*100:0)-base.roce};
+  return {base:base,rows:rows,goal:goal,volRow:volRow,tgt:nf(S.targetROI)};
+}
+
 function buildPDF(M){
   var b=M.base, T=M.tiers, tgt=nf(S.targetROI), sel=M.sel, col=S.cols[S.focus];
   var INK="#1D1D1F",INK2="#6E6E73",INK3="#9A9AA0",GREEN="#0E7C57",RED="#C5304A",HAIR="#D6D6DA",HAIRS="#E8E8EC",BAND="#F2F2F4",SELC="#EDF6F1",WHITE="#FFFFFF",GREY="#8E8E93",GT="#EEF6F1",SUBF="#FAFAFB";
@@ -719,106 +768,106 @@ function buildPDF(M){
 
   /* ===== PAGE 2 : CAPITAL & SELF-FUNDING (dashboard) ===== */
   function drawPage2(p){
-    var s=sel, SF=selfFundCeiling(M), fv=nf(S.cols[S.focus].vol);
+    var LE=leverEngine(M), b0=LE.base, G=LE.goal;
     p.rect(40,40,30,30,GREEN);p.txt(47,61,"AA",13,true,WHITE);
-    p.txt(80,55,"Capital & self-funding",17,true,INK);
-    p.txt(80,72,"How the money is built  -  detail at "+fv+" T/mo",10,false,INK2);
+    p.txt(80,55,"Levers to clear "+LE.tgt+"% RoCE",17,true,INK);
+    p.txt(80,72,"Equity-driven  -  what your Rs "+nf(S.equityCap)+" Cr alone funds, ranked by RoCE",10,false,INK2);
     p.rt(555,67,today(),9.5,false,INK3);p.line(40,88,555,88,HAIR,1);
 
-    p.txt(40,110,"CAPITAL & RETURNS  -  AT "+fv+" T / MONTH",9.5,true,INK2);
-    tileRow(p,40,118,515,[
-      {lab:"TOTAL CAPITAL EMPLOYED",val:"Rs "+cr(s.I)+" Cr",sub:"A + B"},
-      {lab:"RoCE",val:pct(s.roiCap),sub:"op. profit Rs "+cr(s.patEq)+" Cr",col:s.pass?GREEN:RED,hl:true},
-      {lab:"EQUITY",val:"Rs "+cr(s.equityUsed)+" Cr",sub:pct(s.I?s.equityUsed/s.I*100:0)+" of capital"},
-      {lab:"DEBT",val:"Rs "+cr(s.debtCap)+" Cr",sub:"D:E "+s.deCap.toFixed(2)+":1"},
-      {lab:"RoE",val:pct(s.roeCap),sub:(s.roeCap>=tgt?"clears ":"below ")+tgt+"%",col:s.roeCap>=tgt?GREEN:RED,hl:true}
-    ],5,80,17);
+    p.txt(40,106,"WHERE YOU STAND  -  YOUR Rs "+nf(S.equityCap)+" CR ALONE",9.5,true,INK2);
+    tileRow(p,40,114,515,[
+      {lab:"EQUITY FUNDS",val:dec(b0.maxT,1)+" T/mo",sub:"max on own money"},
+      {lab:"SALES / MONTH",val:"Rs "+dec(b0.salesMo,2)+" Cr"},
+      {lab:"OPERATING PROFIT",val:"Rs "+dec(b0.op,2)+" Cr",sub:"per year",col:b0.op>0?GREEN:RED},
+      {lab:"RoCE ON EQUITY",val:pct(b0.roce,1),sub:"target "+LE.tgt+"%",col:b0.roce>=LE.tgt?GREEN:RED,hl:true}
+    ],8,70,15);
 
-    var ty0=222, boxH=226;
-    p.box(40,ty0,250,boxH,HAIR,0.9);
-    p.rect(40,ty0,250,21,BAND);p.txt(48,ty0+14.5,"FIXED ASSETS (A)  -  Rs "+cr(b.fixedAssets)+" Cr",9,true,INK2);
-    p.txt(48,ty0+34,"Same at every volume  (Rs Cr)",8,false,INK3);
-    var ay=ty0+51, arh=13.8;
-    S.assets.forEach(function(a,i){p.txt(50,ay+i*arh,a.name.length>33?a.name.substr(0,33):a.name,8.8,false,INK2);p.rt(282,ay+i*arh,cr(nf(a.amt)),8.8,false,INK);});
-    var ae=ay+S.assets.length*arh;p.line(48,ae,284,ae,HAIRS,0.5);
-    p.txt(50,ae+15,"Total fixed assets",9.2,true,INK);p.rt(282,ae+15,"Rs "+cr(b.fixedAssets)+" Cr",9.2,true,INK);
-
-    p.box(300,ty0,255,boxH,HAIR,0.9);
-    p.rect(300,ty0,255,21,BAND);p.txt(308,ty0+14.5,"WORKING CAPITAL (B)  -  Rs "+cr(s.wc)+" Cr",9,true,INK2);
-    p.txt(308,ty0+34,"How each piece is worked out, at "+fv+"T",8,false,INK3);
-    var aCOGS=s.salesYr-s.ebit, wy=ty0+53;
-    function wc(label,form,amt,sign,bold,c){
-      p.txt(308,wy,label,9.2,!!bold,bold?INK:INK2);
-      if(form)p.txt(308,wy+13,form,8,false,INK3);
-      p.rt(547,wy+(bold?2:1),(sign||"")+"Rs "+cr(amt)+" Cr",9.4,!!bold,c||INK);
-      wy+=(bold?24:33);
-    }
-    wc("Raw material stock","Annual RM "+cr(s.rmYr)+" Cr / 365 x "+nf(S.rmDays)+" d",s.rmInv);
-    wc("Finished goods & WIP","Annual COGS "+cr(aCOGS)+" Cr / 365 x "+nf(S.fgDays)+" d",s.fgInv);
-    wc("Debtors","Annual sales "+cr(s.salesYr)+" Cr / 365 x "+nf(S.debDays)+" d",s.recv);
-    wc("less Creditors","Annual RM "+cr(s.rmYr)+" Cr / 365 x "+nf(S.credDays)+" d",s.pay,"- ",false,GREEN);
-    p.line(305,wy-4,550,wy-4,HAIRS,0.6);
-    wc("Net working capital (B)","",s.wc,"",true);
-
-    var cy=ty0+boxH+18;
-    p.rect(40,cy,515,20,GT);p.txt(48,cy+14,"SELF-FUNDED CEILING  -  Rs "+nf(S.equityCap)+" Cr, NO DEBT  -  where your own money runs out",9,true,GREEN);
-    var cby=cy+20;p.box(40,cby,515,86,HAIR,0.9);
-    if(SF.belowMin){
-      p.txt(56,cby+38,"Rs "+nf(S.equityCap)+" Cr cannot fully fund even the smallest "+SF.minVol+"T (needs Rs "+cr(SF.minI)+" Cr).",10,true,RED);
-      p.txt(56,cby+58,"Debt is needed from the start.",10,true,RED);
-    }else{
-      p.txt(56,cby+28,"You get stuck at",9,false,INK3);
-      p.txt(56,cby+57,dec(SF.vol,1)+" T / month",21,true,INK);
-      p.txt(56,cby+74,"turnover Rs "+cr(SF.sales)+" Cr / yr",9.5,false,INK2);
-      var sx=232, sw=(545-232)/4;
-      [["Sales","Rs "+cr(SF.sales)+" Cr",INK],["RM + costs","Rs "+cr(SF.rmYr+SF.fixedYr+SF.varYr)+" Cr",INK],["Net profit","Rs "+cr(SF.pat)+" Cr",SF.pat>0?GREEN:RED],["RoCE here",pct(SF.roce),INK]].forEach(function(it,i){
-        var tx=sx+i*sw;p.line(tx,cby+16,tx,cby+70,HAIRS,0.5);
-        p.txt(tx+14,cby+36,it[0],8.4,false,INK3);p.txt(tx+14,cby+58,it[1],13,true,it[2]);
-      });
-    }
-
-    var CCC=nf(S.rmDays)+nf(S.fgDays)+nf(S.debDays)-nf(S.credDays);
-    var cyc=p.wrap("Cash stays tied up about "+CCC+" days: RM stock "+nf(S.rmDays)+" + finished goods "+nf(S.fgDays)+" + debtors "+nf(S.debDays)+" - suppliers' credit "+nf(S.credDays)+". That locked-up cash IS the working capital, and it must be funded before the first rupee of profit comes in.",112);
-    var maxMo=0;T.forEach(function(t){var need=Math.max(0,t.I-M.Ecap);var mo=(need>0&&t.patCap>0)?need/t.patCap*12:0;if(mo>maxMo)maxMo=mo;});
-    var vtxt=(SF.belowMin?("Your Rs "+nf(S.equityCap)+" Cr does not fully cover even the smallest column - outside funding is needed from the start. "):("Up to ~"+dec(SF.vol,0)+"T your Rs "+nf(S.equityCap)+" Cr funds the fixed assets and the whole working-capital cycle - NO outside money. "))+"Past that, the outside need is a bridge the business repays from its own profit in about "+Math.round(maxMo)+" months - short-term working-capital finance, not permanent debt. Suppliers ("+nf(S.credDays)+"d) and salaries are paid on their due dates throughout.";
-    var vt=p.wrap(vtxt,112);
-    var gy=cby+86+18, gcol=[300,402,455,502,548];
-    var boxH=20+12+cyc.length*11.5+9+16+T.length*18+13+vt.length*11.5+6;
-    p.box(40,gy,515,boxH,HAIR,0.9);
-    p.rect(40,gy,515,20,BAND);p.txt(48,gy+14,"WILL YOU NEED OUTSIDE MONEY?  -  funding the working-capital cycle",9,true,INK2);
-    var cyy=gy+32;cyc.forEach(function(ln){p.txt(48,cyy,ln,8.5,false,INK2);cyy+=11.5;});
-    var thy=cyy+1;
-    p.txt(48,thy+10,"Volume",8.2,true,INK3);
-    p.rt(gcol[0],thy+10,"Capital needed",8.2,true,INK3);p.rt(gcol[1],thy+10,"Your Rs "+nf(S.equityCap)+" Cr",8.2,true,INK3);
-    p.rt(gcol[2],thy+10,"Outside",8.2,true,INK3);p.rt(gcol[3],thy+10,"Profit/yr",8.2,true,INK3);p.rt(gcol[4],thy+10,"Repaid in",8.2,true,INK3);
+    var ty=196;
+    p.rect(40,ty,515,19,BAND);p.txt(48,ty+13,"SINGLE-LEVER IMPACT  -  each applied alone to your equity, ranked by RoCE",9,true,INK2);
+    var thy=ty+19, c1=352,c2=408,c3=470,c4=515,c5=552;
+    p.txt(48,thy+12,"Lever",7.4,true,INK3);
+    p.rt(c1,thy+12,"WC freed",7.4,true,INK3);p.rt(c2,thy+12,"Max T",7.4,true,INK3);
+    p.rt(c3,thy+12,"Sales/mo",7.4,true,INK3);p.rt(c4,thy+12,"RoCE",7.4,true,INK3);p.rt(c5,thy+12,"vs base",7.4,true,INK3);
     p.line(40,thy+16,555,thy+16,HAIR,0.7);
-    var gyy=thy+16;
-    T.forEach(function(t,i){
-      var eqd=Math.min(M.Ecap,t.I), need=Math.max(0,t.I-M.Ecap), mo=(need>0&&t.patCap>0)?need/t.patCap*12:0;
-      if(i===S.focus)p.rect(40,gyy,515,18,SELC);
-      p.txt(48,gyy+12.5,nf(t.vol)+"T",9.6,true,INK);
-      p.rt(gcol[0],gyy+12.5,cr(t.I)+" Cr",9.4,false,INK2);
-      p.rt(gcol[1],gyy+12.5,cr(eqd)+" Cr",9.4,false,INK2);
-      p.rt(gcol[2],gyy+12.5,need>0?cr(need)+" Cr":"none",9.6,true,need>0?INK:GREEN);
-      p.rt(gcol[3],gyy+12.5,cr(t.patCap)+" Cr",9.4,false,INK2);
-      p.rt(gcol[4],gyy+12.5,need>0?(t.patCap>0?"~"+Math.round(mo)+" mo":"never"):"-",9.4,true,need>0?(t.patCap>0?INK:RED):INK3);
-      p.line(40,gyy+18,555,gyy+18,HAIRS,0.35);gyy+=18;
+    var rowH=18, yy=thy+16;
+    function lrow(name,change,wcF,maxT,salesMo,roce,d,hl,roceCol,dCol){
+      if(hl)p.rect(40,yy,515,rowH,hl);
+      p.txt(48,yy+12.5,name,8.8,true,INK);
+      if(change)p.txt(48+tw(name,8.8)+5,yy+12.5,change,7,false,INK3);
+      p.rt(c1,yy+12.5,wcF,8.2,false,INK2);p.rt(c2,yy+12.5,maxT,8.6,true,INK);
+      p.rt(c3,yy+12.5,salesMo,8.2,false,INK2);p.rt(c4,yy+12.5,roce,8.8,true,roceCol||INK);
+      p.rt(c5,yy+12.5,d,8.2,true,dCol||INK3);
+      p.line(40,yy+rowH,555,yy+rowH,HAIRS,0.3);yy+=rowH;
+    }
+    lrow("Base — today","","—",dec(b0.maxT,1)+"T","Rs "+dec(b0.salesMo,2),pct(b0.roce,1),"—",BAND,b0.roce>=LE.tgt?GREEN:RED,INK3);
+    LE.rows.forEach(function(r){
+      lrow(r.name,r.change,"Rs "+dec(r.wcFreed,2),dec(r.maxT,1)+"T","Rs "+dec(r.salesMo,2),pct(r.roce,1),(r.d>=0?"+":"")+dec(r.d,1),null,(r.roce>=LE.tgt?GREEN:(r.roce>=0?INK:RED)),(r.d>=0?GREEN:RED));
     });
-    var vy=gyy+13;vt.forEach(function(ln){p.txt(48,vy,ln,8.4,false,INK3);vy+=11.5;});
+    p.line(40,yy,555,yy,HAIR,0.6);
+    var vr=LE.volRow;
+    lrow(vr.name,"",vr.change,dec(vr.maxT,1)+"T","Rs "+dec(vr.salesMo,2),pct(vr.roce,1),(vr.d>=0?"+":"")+dec(vr.d,1),SUBF,vr.roce>=LE.tgt?GREEN:INK,vr.d>=0?GREEN:RED);
+    p.box(40,thy,515,yy-thy,HAIR,0.8);
 
-    p.line(40,815,555,815,HAIRS,0.6);p.txt(40,828,"Alu-Alu Command  -  page 2 of 3  -  detail at "+fv+" T/mo  -  "+today(),8.5,false,INK3);
+    var gy=yy+18;
+    p.rect(40,gy,515,20,GT);p.txt(48,gy+14,"GOAL CHECK  -  ALL TEN LEVERS APPLIED TOGETHER",9,true,GREEN);
+    var gby=gy+20, gbh=86;p.box(40,gby,515,gbh,HAIR,0.9);
+    var gx=56, gw=(548-56)/5;
+    [["Contribution","Rs "+dec(G.contrib,0)+"/kg",INK],["WC / tonne","Rs "+dec(G.wcPerT,2)+" Cr",INK],["Equity funds",dec(G.maxT,1)+" T/mo",INK],["Sales / mo","Rs "+dec(G.salesMo,2)+" Cr",INK],["RoCE on equity",pct(G.roce,1),G.clears?GREEN:RED]].forEach(function(it,i){
+      var tx=gx+i*gw;if(i>0)p.line(tx-7,gby+12,tx-7,gby+58,HAIRS,0.5);
+      p.txt(tx,gby+28,it[0],8,false,INK3);p.txt(tx,gby+49,it[1],12.5,true,it[2]);
+    });
+    p.line(48,gby+62,547,gby+62,HAIRS,0.5);
+    p.txt(56,gby+78,"Clears "+LE.tgt+"% on your own money?",8.6,true,INK2);
+    p.rt(548,gby+78,G.clears?"YES":"NO  -  needs scale or debt",10,true,G.clears?GREEN:RED);
+
+    var ny=gby+gbh+16;
+    p.rect(40,ny,515,18,SUBF);p.txt(48,ny+12.5,"AT "+dec(G.scaleVol,0)+"T SCALE (FUNDED WITH DEBT)",8,true,INK2);
+    var note=p.wrap("At "+dec(G.scaleVol,0)+" T/month, the same all-lever structure earns "+pct(G.scaleRoce,1)+" RoCE on Rs "+dec(G.scaleCap,2)+" Cr of capital (operating profit Rs "+dec(G.scaleOp,2)+" Cr/yr). The levers lift returns, but reaching "+LE.tgt+"% comes from the "+dec(G.scaleVol,0)+"T scale with debt - not from your equity alone.",118);
+    var nyy=ny+30;note.forEach(function(ln){p.txt(48,nyy,ln,9,false,INK);nyy+=13;});
+
+    p.line(40,815,555,815,HAIRS,0.6);p.txt(40,828,"Alu-Alu Command  -  page 2 of 3  -  lever analysis on Rs "+nf(S.equityCap)+" Cr equity  -  "+today(),8.5,false,INK3);
   }
 
   /* ===== PAGE 3 : MONTHLY COST BREAK-UP ===== */
   function drawPage3(p){
+    var s=sel, fv=nf(S.cols[S.focus].vol), fi=S.focus, gpct=nf(S.gst);
     p.rect(40,40,30,30,GREEN);p.txt(47,61,"AA",13,true,WHITE);
-    p.txt(80,55,"Monthly cost break-up",17,true,INK);
-    p.txt(80,72,"Every line, across all four volumes  -  "+nf(S.cols[S.focus].vol)+"T highlighted",10,false,INK2);
+    p.txt(80,55,"Capital & monthly cost",17,true,INK);
+    p.txt(80,72,"Fixed assets, GST-blocked working capital & cost build-up  -  at "+fv+" T/mo",10,false,INK2);
     p.rt(555,67,today(),9.5,false,INK3);p.line(40,88,555,88,HAIR,1);
 
-    var fi=S.focus, top=110;
-    p.rect(40,top,515,21,BAND);p.txt(48,top+14.5,"COST PER MONTH BY VOLUME   (Rs)",9.2,true,INK2);
-    var hy=top+21, hdrH=20, rowH=20.4;
+    var ty0=100, boxH2=196;
+    p.box(40,ty0,250,boxH2,HAIR,0.9);
+    p.rect(40,ty0,250,21,BAND);p.txt(48,ty0+14.5,"FIXED ASSETS (A)  -  Rs "+cr(b.fixedAssets)+" Cr",9,true,INK2);
+    var ay=ty0+37, arh=12.6;
+    S.assets.forEach(function(a,i){p.txt(50,ay+i*arh,a.name.length>32?a.name.substr(0,32):a.name,8.2,false,INK2);p.rt(282,ay+i*arh,cr(nf(a.amt)),8.2,false,INK);});
+    var ae=ay+S.assets.length*arh;p.line(48,ae,284,ae,HAIRS,0.5);
+    p.txt(50,ae+13,"Total fixed assets",9,true,INK);p.rt(282,ae+13,"Rs "+cr(b.fixedAssets)+" Cr",9,true,INK);
+
+    p.box(300,ty0,255,boxH2,HAIR,0.9);
+    p.rect(300,ty0,255,21,BAND);p.txt(308,ty0+14.5,"WORKING CAPITAL (B)  -  Rs "+cr(s.wc)+" Cr",9,true,INK2);
+    p.txt(308,ty0+33,"GST-inclusive  -  cash blocked till collection",7.4,false,INK3);
+    var aCOGS=s.salesYr-s.ebit, wy=ty0+50;
+    function wc(label,form,amt,sign,bold,c){
+      p.txt(308,wy,label,9,!!bold,bold?INK:INK2);
+      if(form)p.txt(308,wy+11.5,form,7.2,false,INK3);
+      p.rt(547,wy+(bold?1:0),(sign||"")+"Rs "+cr(amt)+" Cr",9.2,!!bold,c||INK);
+      wy+=(bold?20:29);
+    }
+    wc("Raw material stock","RM "+cr(s.rmYr)+" x1."+gpct+" GST x "+nf(S.rmDays)+"d/365",s.rmInv);
+    wc("Finished goods & WIP","COGS "+cr(aCOGS)+" x1."+gpct+" GST x "+nf(S.fgDays)+"d/365",s.fgInv);
+    wc("Debtors","Sales "+cr(s.salesYr)+" x1."+gpct+" GST x "+nf(S.debDays)+"d/365",s.recv);
+    wc("less Creditors","non-foil RM only x "+nf(S.credDays)+"d (foil paid on advance)",s.pay,"- ",false,GREEN);
+    p.line(305,wy-3,550,wy-3,HAIRS,0.6);
+    wc("Net working capital (B)","",s.wc,"",true);
+
+    var gny=ty0+boxH2+9;
+    var gnote=p.wrap("GST note: the "+gpct+"% GST on foil and RM is paid at purchase but recovered only when customers pay, so it stays blocked in RM stock, finished goods and debtors across the whole "+(nf(S.rmDays)+nf(S.fgDays)+nf(S.debDays))+"-day cycle - it is working capital, not a wash. Foil is bought on advance, so it earns no supplier credit.",150);
+    gnote.forEach(function(ln){p.txt(40,gny,ln,8,false,INK3);gny+=11;});
+
+    var top=gny+8;
+    p.rect(40,top,515,19,BAND);p.txt(48,top+13,"MONTHLY COST BY VOLUME   (Rs)",9,true,INK2);
+    var hy=top+19, hdrH=17, rowH=13.0;
     var rows=[];
     rows.push({sub:"FIXED COST"});
     col.fixed.forEach(function(f,k){rows.push({l:f.name,c:T.map(function(t,ci){return inr(nf(S.cols[ci].fixed[k].amt));})});});
@@ -832,24 +881,19 @@ function buildPDF(M){
     rows.push({l:"Selling price / kg",c:T.map(function(){return "Rs "+dec(nf(S.price),0);})});
     var totalH=hdrH+rows.length*rowH;
     p.rect(EDG[fi],hy,EDG[fi+1]-EDG[fi],totalH,SELC);
-    T.forEach(function(t,i){p.rt(CR4[i],hy+14,nf(S.cols[i].vol)+"T",10.5,true,i===fi?GREEN:INK);});
+    T.forEach(function(t,i){p.rt(CR4[i],hy+12,nf(S.cols[i].vol)+"T",9.5,true,i===fi?GREEN:INK);});
     p.line(40,hy+hdrH,555,hy+hdrH,HAIR,0.9);
     var yy=hy+hdrH;
     rows.forEach(function(rw){
-      if(rw.sub){p.rect(40,yy,515,rowH,SUBF);p.txt(48,yy+13.6,rw.sub,8.2,true,INK3);p.line(40,yy+rowH,555,yy+rowH,HAIRS,0.4);yy+=rowH;return;}
-      p.txt(48,yy+13.6,rw.l,10,!!rw.b,rw.b?INK:INK2);
-      rw.c.forEach(function(cell,i){p.rt(CR4[i],yy+13.6,cell,10,!!rw.b,rw.col?rw.col(i):INK);});
-      p.line(40,yy+rowH,555,yy+rowH,HAIRS,0.35);yy+=rowH;
+      if(rw.sub){p.rect(40,yy,515,rowH,SUBF);p.txt(48,yy+9.2,rw.sub,7.6,true,INK3);p.line(40,yy+rowH,555,yy+rowH,HAIRS,0.4);yy+=rowH;return;}
+      p.txt(48,yy+9.2,rw.l,8.4,!!rw.b,rw.b?INK:INK2);
+      rw.c.forEach(function(cell,i){p.rt(CR4[i],yy+9.2,cell,8.4,!!rw.b,rw.col?rw.col(i):INK);});
+      p.line(40,yy+rowH,555,yy+rowH,HAIRS,0.3);yy+=rowH;
     });
     p.box(40,hy,515,totalH,HAIR,0.9);
     [EDG[0],EDG[1],EDG[2],EDG[3]].forEach(function(xx){p.line(xx,hy,xx,hy+totalH,HAIRS,0.5);});
 
-    var ny=hy+totalH+22;
-    p.rect(40,ny,515,20,GT);p.txt(48,ny+14,"READING IT",9,true,GREEN);
-    var note=p.wrap("Fixed cost is the same rupees whether you sell little or much, so spreading it over more kilos is what drives the conversion cost down from Rs "+dec(T[0].conv,2)+"/kg at "+nf(S.cols[0].vol)+"T to Rs "+dec(T[T.length-1].conv,2)+"/kg at "+nf(S.cols[T.length-1].vol)+"T. With RM at Rs "+dec(b.finalRM,0)+"/kg and price at Rs "+dec(nf(S.price),0)+"/kg, every extra tonne widens the gross margin - the single biggest lever on this project.",104);
-    var nyy=ny+38;note.forEach(function(ln){p.txt(48,nyy,ln,9.6,false,INK);nyy+=14.5;});
-
-    p.line(40,815,555,815,HAIRS,0.6);p.txt(40,828,"Alu-Alu Command  -  page 3 of 3  -  all four volumes  -  "+today(),8.5,false,INK3);
+    p.line(40,815,555,815,HAIRS,0.6);p.txt(40,828,"Alu-Alu Command  -  page 3 of 3  -  fixed assets, WC & cost build-up  -  "+today(),8.5,false,INK3);
   }
 
   var p1=P();drawPage1(p1);var p2=P();drawPage2(p2);var p3=P();drawPage3(p3);
