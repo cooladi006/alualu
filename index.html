@@ -239,7 +239,7 @@ function viewDashboard(M){
   else{var bits=[];if(sol.foilLine!=null&&sol.foilLine>sol.folCur)bits.push("foil can rise Rs "+Math.round(sol.foilLine-sol.folCur));if(sol.priceLine!=null&&sol.priceCur>sol.priceLine)bits.push("price can fall Rs "+Math.round(sol.priceCur-sol.priceLine));reason="Clears target on your Rs "+nf(S.equityCap)+" Cr"+(bits.length?" \u00B7 "+bits.slice(0,2).join(", ")+" before it breaks":"")+".";}
   var html="";
   html+='<div style="background:'+vbg+';border-radius:18px;padding:20px 22px;margin-bottom:26px"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px"><div><div style="font-size:12px;font-weight:700;letter-spacing:.1em;color:'+vcolor+'">'+verdict+'</div><div style="font-size:13.5px;color:var(--ink2);margin-top:7px;line-height:1.45">'+reason+'</div></div><div style="text-align:right;flex:0 0 auto"><div class="num" style="font-size:40px;font-weight:600;line-height:1;color:'+vcolor+'">'+pct(roe)+'</div><div style="font-size:11px;color:var(--ink3);margin-top:3px">on your Rs '+nf(S.equityCap)+' Cr</div></div></div></div>';
-  html+='<div style="font-size:14px;color:var(--ink2);margin-bottom:22px">At <b>'+fv+'T</b>: invest <b>Rs '+cr(s.I)+' Cr</b> (your Rs '+cr(s.equityUsed)+' Cr + Rs '+cr(s.debtCap)+' Cr debt) \u00B7 net profit <b>Rs '+cr(s.patEq)+' Cr</b>/yr.</div>';
+  html+='<div style="font-size:14px;color:var(--ink2);margin-bottom:22px">At <b>'+fv+'T</b>: invest <b>Rs '+cr(s.I)+' Cr</b> (your Rs '+cr(s.equityUsed)+' Cr + Rs '+cr(s.debtCap)+' Cr debt) \u00B7 net profit <b>Rs '+cr(s.patCap)+' Cr</b>/yr'+(s.interestCap>0?' (after Rs '+cr(s.interestCap)+' Cr interest)':'')+'.</div>';
   // ---- plan vs actual (live, when tracking is on) ----
   if(S.actuals&&S.actuals.on){
     var AC=computeActual(M);
@@ -262,10 +262,13 @@ function viewDashboard(M){
     html+=pRow("Fixed cost / mo","Rs "+dec(planFixed/1e5,2)+"L","Rs "+dec(AC.fixedMo/1e5,2)+"L",sgn((AC.fixedMo-planFixed)/1e5,function(v){return dec(v,2)+"L";}),AC.fixedMo<=planFixed+1e-9,false);
     html+=pRow("Debtor days",dec(nf(S.debDays),0)+"d",dec(AC.debDays,0)+"d",sgn(AC.debDays-nf(S.debDays))+"d",AC.debDays<=nf(S.debDays)+1e-9,false);
     html+=pRow("Inventory days",dec(planInv,0)+"d",dec(AC.invDays,0)+"d",sgn(AC.invDays-planInv)+"d",AC.invDays<=planInv+1e-9,false);
-    html+=pRow("RoCE",pct(s.roiCap),pct(AC.roiCap),sgn(AC.roiCap-s.roiCap,function(v){return dec(v,0)+"pt";}),AC.roiCap>=s.roiCap-0.05,true);
+    html+=pRow("RoCE (operating)",pct(s.roiCap),pct(AC.roiCap),sgn(AC.roiCap-s.roiCap,function(v){return dec(v,0)+"pt";}),AC.roiCap>=s.roiCap-0.05,false);
+    html+=pRow("Interest on debt","Rs "+cr(s.interestCap)+"Cr","Rs "+cr(AC.interest)+"Cr",sgn((AC.interest-s.interestCap)/1e7,function(v){return dec(v,2)+"Cr";}),AC.interest<=s.interestCap+1,false);
+    html+=pRow("Net profit (after int.)","Rs "+cr(s.patCap)+"Cr","Rs "+cr(AC.patNet)+"Cr",sgn((AC.patNet-s.patCap)/1e7,function(v){return dec(v,2)+"Cr";}),AC.patNet>=s.patCap-1,false);
+    html+=pRow("RoE on your "+nf(S.equityCap)+"Cr",pct(s.roeCap),pct(AC.roeCap),sgn(AC.roeCap-s.roeCap,function(v){return dec(v,0)+"pt";}),AC.roeCap>=s.roeCap-0.05,true);
     html+='</div>';
-    var actVerd=AC.roceOk?("This month clears your "+tgt+"% target at "+pct(AC.roiCap)+" RoCE (plan "+pct(s.roiCap)+")."):("This month came in at "+pct(AC.roiCap)+" RoCE, below your "+tgt+"% target \u2014 the red lines show what slipped against plan.");
-    html+='<div style="font-size:12.5px;color:'+(AC.roceOk?'var(--green)':'var(--red)')+';font-weight:500;margin:10px 2px 0">'+actVerd+'</div>';
+    var actVerd=AC.roeOk?("This month clears your "+tgt+"% target \u2014 "+pct(AC.roeCap)+" on your own money after interest (plan "+pct(s.roeCap)+")."):("This month returned "+pct(AC.roeCap)+" on your equity after interest, below your "+tgt+"% target \u2014 the red lines show what slipped.");
+    html+='<div style="font-size:12.5px;color:'+(AC.roeOk?'var(--green)':'var(--red)')+';font-weight:500;margin:10px 2px 0">'+actVerd+'</div>';
   }
   html+='<div class="eyebrow"'+(S.actuals&&S.actuals.on?' style="margin-top:30px"':'')+'>Compare volumes \u2014 tap to focus</div>';
   html+='<div class="matrix" style="margin-top:12px">';
@@ -273,11 +276,14 @@ function viewDashboard(M){
   M.tiers.forEach(function(t,i){html+='<button class="mh" data-action="focus" data-i="'+i+'" style="background:'+(i===S.focus?"var(--sel)":"#fff")+'">'+t.vol+'T</button>';});
   function mrow(label,fn,opt){opt=opt||{};html+='<div class="mlab"'+(opt.last?' style="border-bottom:1px solid var(--hair)"':'')+'>'+esc(label)+'</div>';M.tiers.forEach(function(t,i){var c=fn(t);html+='<div class="mcell" style="background:'+(i===S.focus?"var(--sel)":"#fff")+';'+(opt.last?"border-bottom:1px solid var(--hair)":"")+'"><span class="v num" style="font-size:'+(opt.big?"16px":"13.5px")+';font-weight:'+(opt.big?700:500)+';color:'+(c.color||"var(--ink)")+'">'+c.t+'</span>'+(opt.sub?'<span class="s">'+opt.sub+'</span>':'')+'</div>';});}
   mrow("Sales",function(t){return{t:cr(t.salesYr)};},{sub:"Cr"});
-  mrow("Net profit",function(t){return{t:cr(t.patEq),color:(t.patEq>0?"var(--ink)":"var(--red)")};},{sub:"Cr"});
+  mrow("Operating profit",function(t){return{t:cr(t.patEq),color:(t.patEq>0?"var(--ink)":"var(--red)")};},{sub:"Cr"});
+  mrow("less Interest",function(t){return{t:cr(t.interestCap),color:"var(--ink3)"};},{sub:"Cr"});
+  mrow("Net profit",function(t){return{t:cr(t.patCap),color:(t.patCap>0?"var(--ink)":"var(--red)")};},{sub:"after int."});
   mrow("Investment",function(t){return{t:cr(t.I)};},{sub:"Cr"});
   mrow("ROI on capital",function(t){return{t:pct(t.roiCap),color:(t.pass?"var(--green)":"var(--red)")};},{big:false});
   mrow("ROE on your "+nf(S.equityCap)+" Cr",function(t){return{t:pct(t.roeCap),color:(t.roeCap>=tgt?"var(--green)":"var(--red)")};},{big:true,last:true});
   html+='</div>';
+  html+='<div style="font-size:11.5px;color:var(--ink3);line-height:1.5;margin:8px 2px 0">RoCE is on <b>operating profit</b> (return to all capital, pre-interest). <b>Net profit</b> is after interest on your debt → that’s what drives RoE on your own money.</div>';
   // ---- break-even (live) ----
   html+='<div class="eyebrow" style="margin-top:30px">Break-even \u2014 the floor you must clear every month</div>';
   html+='<div style="font-size:12.5px;color:var(--ink3);margin:6px 0 10px">At Rs '+dec(BE.price,0)+'/kg, contribution is Rs '+dec(BE.contrib,0)+'/kg after RM &amp; variable cost.</div>';
@@ -596,9 +602,13 @@ function computeActual(M){
   var rmInv=rmYr/365*nf(A.rmDays), fgInv=aCOGS/365*nf(A.fgDays), recv=salesYr/365*nf(A.debDays), pay=rmYr/365*nf(A.credDays);
   var wc=rmInv+fgInv+recv-pay, I=b.fixedAssets+wc, roiCap=I?patEq/I*100:0;
   var invDays=nf(A.rmDays)+nf(A.fgDays);
+  var Ecap=nf(S.equityCap)*1e7, r=nf(S.interest)/100;
+  var equityUsed=Math.min(Ecap,I), debt=Math.max(0,I-Ecap), interest=debt*r;
+  var patNet=(ebit-interest)*(1-t), roeCap=equityUsed?patNet/equityUsed*100:0;
   return {vol:vol,price:price,rm:rm,fixedMo:fixedMo,varMo:varMo,conv:conv,contrib:contrib,
     beVol:beVol,beSales:beSales,mos:mos,salesYr:salesYr,ebit:ebit,patEq:patEq,wc:wc,I:I,roiCap:roiCap,
-    debDays:nf(A.debDays),invDays:invDays,roceOk:roiCap>=tgt-0.05,beOk:isFinite(beVol)&&vol>beVol};
+    equityUsed:equityUsed,debt:debt,interest:interest,patNet:patNet,roeCap:roeCap,
+    debDays:nf(A.debDays),invDays:invDays,roceOk:roiCap>=tgt-0.05,roeOk:roeCap>=tgt-0.05,beOk:isFinite(beVol)&&vol>beVol};
 }
 
 function buildPDF(M){
