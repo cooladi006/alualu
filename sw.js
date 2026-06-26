@@ -1,6 +1,6 @@
 /* Alu-Alu Command service worker — network-first so updates show immediately,
    with offline fallback. Bump CACHE when files change. */
-var CACHE = "alualu-v3";
+var CACHE = "alualu-v4";
 var FILES = ["./","./index.html","./manifest.json","./icon-192.png","./icon-512.png","./icon-maskable.png"];
 
 self.addEventListener("install", function (e) {

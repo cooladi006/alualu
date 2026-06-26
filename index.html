@@ -124,6 +124,7 @@ var S={
   ]},
   wastage:"6",price:"490",cols:mkCols(),focus:1,assets:ASSETS0.map(function(a){return{name:a[0],amt:String(a[1])};}),
   rmDays:"30",fgDays:"15",debDays:"75",credDays:"30",targetROI:"30",tax:"0",interest:"11",equityCap:"8",maxDE:"2",revision:"10",
+  actuals:{on:false,month:"This month",vol:"50",price:"490",rm:"396",fixedMo:"1655000",varMo:"700000",debDays:"75",rmDays:"30",fgDays:"15",credDays:"30"},
   tab:"dashboard",screen:null,rep:"viability"
 };
 
@@ -239,7 +240,34 @@ function viewDashboard(M){
   var html="";
   html+='<div style="background:'+vbg+';border-radius:18px;padding:20px 22px;margin-bottom:26px"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px"><div><div style="font-size:12px;font-weight:700;letter-spacing:.1em;color:'+vcolor+'">'+verdict+'</div><div style="font-size:13.5px;color:var(--ink2);margin-top:7px;line-height:1.45">'+reason+'</div></div><div style="text-align:right;flex:0 0 auto"><div class="num" style="font-size:40px;font-weight:600;line-height:1;color:'+vcolor+'">'+pct(roe)+'</div><div style="font-size:11px;color:var(--ink3);margin-top:3px">on your Rs '+nf(S.equityCap)+' Cr</div></div></div></div>';
   html+='<div style="font-size:14px;color:var(--ink2);margin-bottom:22px">At <b>'+fv+'T</b>: invest <b>Rs '+cr(s.I)+' Cr</b> (your Rs '+cr(s.equityUsed)+' Cr + Rs '+cr(s.debtCap)+' Cr debt) \u00B7 net profit <b>Rs '+cr(s.patEq)+' Cr</b>/yr.</div>';
-  html+='<div class="eyebrow">Compare volumes \u2014 tap to focus</div>';
+  // ---- plan vs actual (live, when tracking is on) ----
+  if(S.actuals&&S.actuals.on){
+    var AC=computeActual(M);
+    var planFixed=sum(S.cols[S.focus].fixed), planInv=nf(S.rmDays)+nf(S.fgDays);
+    html+='<div class="eyebrow">'+esc(S.actuals.month||"This month")+' \u2014 plan vs actual</div>';
+    html+='<div style="font-size:12.5px;color:var(--ink3);margin:6px 0 10px">Your real month against the '+fv+'T plan. Green = held or beat plan; red = slipped. Edit it in <b>Enter data \u2192 Actuals</b>.</div>';
+    function sgn(x,f){f=f||function(v){return dec(v,0);};return (x>0?'+':(x<0?'\u2212':''))+f(Math.abs(x));}
+    function pRow(label,planStr,actStr,deltaStr,good,last){
+      return '<div style="display:grid;grid-template-columns:1.35fr 0.85fr 0.85fr 0.95fr;align-items:center;padding:12px 14px;'+(last?'':'border-bottom:1px solid var(--hairS)')+'">'+
+        '<span style="font-size:14px;color:var(--ink)">'+label+'</span>'+
+        '<span class="num" style="text-align:right;font-size:13px;color:var(--ink3)">'+planStr+'</span>'+
+        '<span class="num" style="text-align:right;font-size:13.5px;font-weight:600;color:var(--ink)">'+actStr+'</span>'+
+        '<span class="num" style="text-align:right;font-size:12px;font-weight:600;color:'+(good?'var(--green)':'var(--red)')+'">'+deltaStr+'</span></div>';
+    }
+    html+='<div style="border:1px solid var(--hair);border-radius:16px;overflow:hidden">';
+    html+='<div style="display:grid;grid-template-columns:1.35fr 0.85fr 0.85fr 0.95fr;padding:9px 14px;border-bottom:1px solid var(--hair);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);font-weight:600"><span></span><span style="text-align:right">Plan</span><span style="text-align:right">Actual</span><span style="text-align:right">vs plan</span></div>';
+    html+=pRow("Volume",dec(fv,0)+"T",dec(AC.vol,0)+"T",sgn(AC.vol-fv)+"T",AC.vol>=fv-1e-9,false);
+    html+=pRow("Selling price","Rs "+dec(price,0),"Rs "+dec(AC.price,0),sgn(AC.price-price),AC.price>=price-1e-9,false);
+    html+=pRow("RM cost / kg","Rs "+dec(M.base.finalRM,0),"Rs "+dec(AC.rm,0),sgn(AC.rm-M.base.finalRM),AC.rm<=M.base.finalRM+1e-9,false);
+    html+=pRow("Fixed cost / mo","Rs "+dec(planFixed/1e5,2)+"L","Rs "+dec(AC.fixedMo/1e5,2)+"L",sgn((AC.fixedMo-planFixed)/1e5,function(v){return dec(v,2)+"L";}),AC.fixedMo<=planFixed+1e-9,false);
+    html+=pRow("Debtor days",dec(nf(S.debDays),0)+"d",dec(AC.debDays,0)+"d",sgn(AC.debDays-nf(S.debDays))+"d",AC.debDays<=nf(S.debDays)+1e-9,false);
+    html+=pRow("Inventory days",dec(planInv,0)+"d",dec(AC.invDays,0)+"d",sgn(AC.invDays-planInv)+"d",AC.invDays<=planInv+1e-9,false);
+    html+=pRow("RoCE",pct(s.roiCap),pct(AC.roiCap),sgn(AC.roiCap-s.roiCap,function(v){return dec(v,0)+"pt";}),AC.roiCap>=s.roiCap-0.05,true);
+    html+='</div>';
+    var actVerd=AC.roceOk?("This month clears your "+tgt+"% target at "+pct(AC.roiCap)+" RoCE (plan "+pct(s.roiCap)+")."):("This month came in at "+pct(AC.roiCap)+" RoCE, below your "+tgt+"% target \u2014 the red lines show what slipped against plan.");
+    html+='<div style="font-size:12.5px;color:'+(AC.roceOk?'var(--green)':'var(--red)')+';font-weight:500;margin:10px 2px 0">'+actVerd+'</div>';
+  }
+  html+='<div class="eyebrow"'+(S.actuals&&S.actuals.on?' style="margin-top:30px"':'')+'>Compare volumes \u2014 tap to focus</div>';
   html+='<div class="matrix" style="margin-top:12px">';
   html+='<div class="mh" style="background:#fff;color:var(--ink2);font-weight:600;font-size:11px;letter-spacing:.04em;text-transform:uppercase;display:flex;align-items:center;padding-left:14px;justify-content:flex-start">Per year</div>';
   M.tiers.forEach(function(t,i){html+='<button class="mh" data-action="focus" data-i="'+i+'" style="background:'+(i===S.focus?"var(--sel)":"#fff")+'">'+t.vol+'T</button>';});
@@ -302,7 +330,8 @@ function viewInputs(M){
   if(!S.screen){
     return '<div style="font-size:14.5px;color:var(--ink3);margin-bottom:20px">Pick what to update. Everything saves automatically on this device.</div>'+
       '<div class="blk"><div class="group">'+nav("Price & volumes","Rs "+dec(nf(S.price),0)+" \u00B7 "+focusVol()+"T","price")+nav("Materials & vendors","Rs "+dec(M.base.idealCostKg,0)+"/kg","materials")+nav("Operating expenses","Rs "+dec(s.conv,0)+"/kg","expenses")+'</div></div>'+
-      '<div class="blk"><div class="group">'+nav("Capital & assets","Rs "+cr(M.base.fixedAssets)+" Cr","capital")+nav("Working capital","Rs "+cr(s.wc)+" Cr","wc")+nav("Funding & leverage",nf(S.equityCap)+" Cr cap \u00B7 "+nf(S.interest)+"%","funding")+nav("Targets & tax",nf(S.targetROI)+"% \u00B7 "+dec(nf(S.tax),0)+"% tax","targets")+'</div></div>';
+      '<div class="blk"><div class="group">'+nav("Capital & assets","Rs "+cr(M.base.fixedAssets)+" Cr","capital")+nav("Working capital","Rs "+cr(s.wc)+" Cr","wc")+nav("Funding & leverage",nf(S.equityCap)+" Cr cap \u00B7 "+nf(S.interest)+"%","funding")+nav("Targets & tax",nf(S.targetROI)+"% \u00B7 "+dec(nf(S.tax),0)+"% tax","targets")+'</div></div>'+
+      '<div class="blk"><div class="cardhead"><div class="t">Track the real month</div><div class="n">Enter actuals and measure them against your targets</div></div><div class="group">'+nav("Actuals \u00B7 this month",(S.actuals&&S.actuals.on?"on \u00B7 "+nf(S.actuals.vol)+"T":"off"),"actuals")+'</div></div>';
   }
   var back='<button class="back" data-action="screen" data-v="">\u2039 All inputs</button>';
   if(S.screen==="price"){
@@ -339,6 +368,29 @@ function viewInputs(M){
   if(S.screen==="wc"){return back+'<h2>Working capital</h2>'+card("Operating cycle \u2014 days","Net working capital at "+focusVol()+"T: Rs "+cr(s.wc)+" Cr",row("Raw material stock",field("rmDays",S.rmDays,{suffix:"days",w:70}))+row("Finished goods stock",field("fgDays",S.fgDays,{suffix:"days",w:70}))+row("Credit to customers",field("debDays",S.debDays,{suffix:"days",w:70}))+row("Credit from suppliers",field("credDays",S.credDays,{suffix:"days",w:70})))+card("Build-up at "+focusVol()+"T",null,row("RM stock \u00B7 "+nf(S.rmDays)+"d",'<span class="num" style="font-size:15px">Rs '+cr(s.rmInv)+' Cr</span>')+row("Finished goods \u00B7 "+nf(S.fgDays)+"d",'<span class="num" style="font-size:15px">Rs '+cr(s.fgInv)+' Cr</span>')+row("Debtors \u00B7 "+nf(S.debDays)+"d",'<span class="num" style="font-size:15px">Rs '+cr(s.recv)+' Cr</span>')+row("less Creditors \u00B7 "+nf(S.credDays)+"d",'<span class="num" style="font-size:15px;color:var(--green)">\u2212 Rs '+cr(s.pay)+' Cr</span>')+row("Net working capital",'<span class="num" style="font-size:16px;font-weight:600">Rs '+cr(s.wc)+' Cr</span>'))+'<div class="hint">Debtors are valued at selling price; stretching supplier credit is the cheapest working capital.</div>';}
   if(S.screen==="funding"){return back+'<h2>Funding & leverage</h2>'+card("Your money & debt",null,row("Equity you can invest",field("equityCap",S.equityCap,{prefix:"Rs",suffix:"Cr",w:60}))+row("Interest on debt",field("interest",S.interest,{suffix:"%",w:60}))+row("Max debt : equity bank allows",field("maxDE",S.maxDE,{suffix:": 1",w:50})))+'<div class="hint">Used in the Report to work out how much to fund as equity vs debt to hit '+nf(S.targetROI)+'%, and how far your Rs '+nf(S.equityCap)+' Cr can take you.</div>';}
   if(S.screen==="targets"){return back+'<h2>Targets & tax</h2>'+card(null,null,row("Target ROI",field("targetROI",S.targetROI,{suffix:"%",w:60}))+row("Tax rate",field("tax",S.tax,{suffix:"%",w:60})))+'<div class="hint">Tax 0% shows pre-tax return.</div><div style="margin-top:22px"><button class="linkbtn" data-action="reset" style="color:var(--red)">Reset all data</button></div>';}
+  if(S.screen==="actuals"){
+    var A=S.actuals, AC=computeActual(M);
+    var toggle='<div style="display:flex;gap:7px">'+
+      '<button class="pill'+(A.on?'':' on')+'" data-action="actualsOff">Off</button>'+
+      '<button class="pill'+(A.on?' on':'')+'" data-action="actualsOn">Tracking</button></div>';
+    var h=back+'<h2>Actuals · this month</h2>'+
+      '<div style="font-size:13.5px;color:var(--ink3);margin:-10px 0 18px">Enter the month’s real figures. When tracking is on, the ROI dashboard shows plan vs actual against your '+nf(S.targetROI)+'% control limits.</div>'+
+      card(null,null,row("Track this month",toggle)+row("Month label",field("actuals.month",A.month,{w:140})))+
+      card("What you actually did","RoCE this month: "+pct(AC.roiCap)+" · break-even "+dec(AC.beVol,1)+"T",
+        row("Volume sold",field("actuals.vol",A.vol,{suffix:"T/mo",w:70}))+
+        row("Selling price realised",field("actuals.price",A.price,{prefix:"Rs",w:80}))+
+        row("RM cost (incl. wastage)",field("actuals.rm",A.rm,{prefix:"Rs",w:80}))+
+        row("Fixed cost / month",field("actuals.fixedMo",A.fixedMo,{prefix:"Rs",w:118}))+
+        row("Variable cost / month",field("actuals.varMo",A.varMo,{prefix:"Rs",w:118})))+
+      card("Cycle this month","Working capital Rs "+cr(AC.wc)+" Cr · investment Rs "+cr(AC.I)+" Cr",
+        row("Debtor days",field("actuals.debDays",A.debDays,{suffix:"days",w:70}))+
+        row("RM stock days",field("actuals.rmDays",A.rmDays,{suffix:"days",w:70}))+
+        row("Finished goods days",field("actuals.fgDays",A.fgDays,{suffix:"days",w:70}))+
+        row("Creditor days",field("actuals.credDays",A.credDays,{suffix:"days",w:70})))+
+      '<div style="margin:4px 2px 0"><button class="linkbtn" data-action="copyPlan" style="color:var(--green)">↺ Copy current plan ('+focusVol()+'T) into actuals</button></div>'+
+      '<div class="hint">Start from the plan, then change only what differed. The dashboard flags every lever that drifted out of its limit.</div>';
+    return h;
+  }
   return "";
 }
 
@@ -447,6 +499,7 @@ function setByPath(p,v){
   if(g.length===1){S[g[0]]=v;return;}
   if(g[0]==="subv"){S.substrates[+g[1]].vendors[+g[2]][g[3]]=v;return;}
   if(g[0]==="adhv"){S.adh.comps[+g[1]].vendors[+g[2]][g[3]]=v;return;}
+  if(g[0]==="actuals"){S.actuals[g[1]]=v;return;}
   if(g[0]==="adh"){if(g[1]==="comp"){S.adh.comps[+g[2]][g[3]]=v;}else{S.adh[g[1]]=v;}return;}
   if(g[0]==="sub"){S.substrates[+g[1]][g[2]]=v;return;}
   if(g[0]==="col"){S.cols[+g[1]][g[2]]=v;return;}
@@ -516,6 +569,23 @@ function controlLimits(M){
     maxDeb:maxDeb,debNow:debNow,debOk:debNow<=maxDeb,
     maxInv:maxInv,invNow:invNow,invOk:invNow<=maxInv,
     minVol:minVol,volNow:vol,volOk:isFinite(minVol)&&vol>=minVol};
+}
+function computeActual(M){
+  var A=S.actuals, b=M.base, t=nf(S.tax)/100, tgt=nf(S.targetROI);
+  var vol=nf(A.vol), price=nf(A.price), rm=nf(A.rm), fixedMo=nf(A.fixedMo), varMo=nf(A.varMo);
+  var kgMo=vol*1000, kgYr=kgMo*12;
+  var varPerKg=kgMo>0?varMo/kgMo:0, conv=kgMo>0?(fixedMo+varMo)/kgMo:0, contrib=price-rm-varPerKg;
+  var beQtyKg=contrib>0?fixedMo/contrib:Infinity, beVol=beQtyKg/1000, beSales=beQtyKg*price;
+  var mos=(vol>0&&isFinite(beVol))?(vol-beVol)/vol*100:0;
+  var salesYr=kgYr*price, rmYr=kgYr*rm, fixedYr=fixedMo*12, varYr=varMo*12;
+  var ebit=salesYr-rmYr-fixedYr-varYr, patEq=ebit*(1-t);
+  var totCostKg=rm+conv, aCOGS=kgYr*totCostKg;
+  var rmInv=rmYr/365*nf(A.rmDays), fgInv=aCOGS/365*nf(A.fgDays), recv=salesYr/365*nf(A.debDays), pay=rmYr/365*nf(A.credDays);
+  var wc=rmInv+fgInv+recv-pay, I=b.fixedAssets+wc, roiCap=I?patEq/I*100:0;
+  var invDays=nf(A.rmDays)+nf(A.fgDays);
+  return {vol:vol,price:price,rm:rm,fixedMo:fixedMo,varMo:varMo,conv:conv,contrib:contrib,
+    beVol:beVol,beSales:beSales,mos:mos,salesYr:salesYr,ebit:ebit,patEq:patEq,wc:wc,I:I,roiCap:roiCap,
+    debDays:nf(A.debDays),invDays:invDays,roceOk:roiCap>=tgt-0.05,beOk:isFinite(beVol)&&vol>beVol};
 }
 
 function buildPDF(M){
@@ -997,6 +1067,9 @@ document.addEventListener("click",function(e){
   else if(a==="selv"){matObj(el.dataset.mat).sel=parseInt(el.dataset.i,10);render();window.scrollTo(0,sy);}
   else if(a==="addv"){var m=matObj(el.dataset.mat);m.vendors.push({name:"New vendor",rate:String(nf(m.vendors[m.sel].rate))});render();window.scrollTo(0,sy);}
   else if(a==="delv"){var m2=matObj(el.dataset.mat),di=parseInt(el.dataset.i,10);if(m2.vendors.length>1){m2.vendors.splice(di,1);if(m2.sel>=m2.vendors.length)m2.sel=m2.vendors.length-1;else if(di<m2.sel)m2.sel--;}render();window.scrollTo(0,sy);}
+  else if(a==="actualsOn"){S.actuals.on=true;render();window.scrollTo(0,sy);}
+  else if(a==="actualsOff"){S.actuals.on=false;render();window.scrollTo(0,sy);}
+  else if(a==="copyPlan"){var col=S.cols[S.focus];S.actuals.vol=String(focusVol());S.actuals.price=String(nf(S.price));S.actuals.rm=String(Math.round(compute().base.finalRM));S.actuals.fixedMo=String(Math.round(sum(col.fixed)));S.actuals.varMo=String(Math.round(sum(col.variable)));S.actuals.debDays=String(nf(S.debDays));S.actuals.rmDays=String(nf(S.rmDays));S.actuals.fgDays=String(nf(S.fgDays));S.actuals.credDays=String(nf(S.credDays));render();window.scrollTo(0,sy);}
 });
 
 load();render();
