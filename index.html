@@ -463,26 +463,18 @@ function reportViability(M){
     {label:"Debt : Equity",cells:T.map(function(t){return t.deCap.toFixed(2)+":1";})},
     {label:"Return on your equity",cells:T.map(function(t){return pct(t.roeCap);}),strong:true,color:function(i){return T[i].roeCap>=tgt?"var(--green)":"var(--red)";}}
   ]);
-  h+='<div class="head">Analysis \u00B7 achieving '+tgt+'% efficiently</div>';
-  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px">';
-  analysisCategories(M).forEach(function(cat){h+='<div class="group" style="padding:0"><div style="padding:9px 13px;font-size:10.5px;font-weight:600;color:var(--ink2);background:#fff;border-bottom:1px solid var(--hairS);text-transform:uppercase;letter-spacing:.04em">'+esc(cat.t)+'</div><div style="padding:10px 13px;font-size:12.5px;line-height:1.5">'+esc(cat.b)+'</div></div>';});
+  var BE=breakeven(M);
+  h+='<div class="head">Break-even \u00B7 the floor to clear every month</div>';
+  h+='<div style="border:1px solid var(--hair);border-radius:12px;overflow:hidden">';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr">';
+  h+='<div style="padding:14px 16px;border-right:1px solid var(--hairS)"><div style="font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);font-weight:600">Break-even volume</div><div class="num" style="font-size:24px;font-weight:600;margin-top:5px;line-height:1">'+(isFinite(BE.beVol)?dec(BE.beVol,1)+'<span style="font-size:13px;color:var(--ink3);font-weight:500"> T/mo</span>':'never')+'</div><div class="num" style="font-size:11.5px;color:var(--ink3);margin-top:2px">'+(isFinite(BE.beQtyKg)?inr(BE.beQtyKg)+' kg/mo':'')+'</div></div>';
+  h+='<div style="padding:14px 16px"><div style="font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);font-weight:600">Break-even sales</div><div class="num" style="font-size:24px;font-weight:600;margin-top:5px;line-height:1">'+(isFinite(BE.beSales)?'Rs '+cr(BE.beSales)+'<span style="font-size:13px;color:var(--ink3);font-weight:500"> Cr/mo</span>':'\u2014')+'</div><div style="font-size:11.5px;color:var(--ink3);margin-top:2px">sell below this and the month is a loss</div></div>';
   h+='</div>';
-  h+='<div style="font-size:12px;color:var(--ink3);margin-top:12px">Goal: reach '+tgt+'% on capital in the most efficient way \u2014 least own money, cheapest operating cycle, lowest cost per kg.</div>';
+  h+='<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 16px;border-top:1px solid var(--hairS);background:var(--surface)"><span style="font-size:12px;color:var(--ink2)">Contribution <b class="num">Rs '+dec(BE.contrib,0)+'</b>/kg \u00B7 Fixed <b class="num">Rs '+inr(BE.fixedMo)+'</b>/mo</span><span class="num" style="font-size:12.5px;font-weight:600;color:'+(BE.mos>0?'var(--green)':'var(--red)')+'">Safety +'+dec(BE.mos,0)+'%</span></div>';
+  h+='</div>';
   h+='</div>';
   return h;
 }
-function analysisCategories(M){
-  var s=M.sel,fv=focusVol(),tgt=nf(S.targetROI),cap=nf(S.equityCap),cats=[];
-  cats.push({t:"Target & threshold",b:(M.threshold?("On capital, the project clears "+tgt+"% from "+M.threshold+"T. At "+fv+"T it earns "+pct(s.roiCap)+" on Rs "+cr(s.I)+" Cr of total capital."):("No volume clears "+tgt+"% on capital alone at today\u2019s cost \u2014 cut cost per kg or lean on leverage."))});
-  cats.push({t:"Funding with your Rs "+cap+" Cr",b:"Your equity is fixed at Rs "+cap+" Cr; the balance is debt. At "+fv+"T you put in Rs "+cr(s.equityUsed)+" Cr and borrow Rs "+cr(s.debtCap)+" Cr (D:E "+s.deCap.toFixed(2)+":1), giving "+pct(s.roeCap)+" on your own money \u2014 "+(s.roeCap>=tgt?"above":"below")+" your "+tgt+"% goal."});
-  var firstROE=M.tiers.filter(function(t){return t.roeCap>=tgt;}),fr=firstROE.length?firstROE[0].vol:null;
-  var SF=selfFundCeiling(M);
-  var b3=SF.belowMin?("Your Rs "+cap+" Cr can\u2019t fully fund even "+SF.minVol+"T (needs Rs "+cr(SF.minI)+" Cr); debt is needed from the start."):("On Rs "+cap+" Cr alone you self-fund up to ~"+dec(SF.vol,0)+" T/mo (Rs "+cr(SF.sales)+" Cr turnover) at "+pct(SF.roce)+" RoCE; beyond that you must add debt. Full P&L on page 2.");
-  cats.push({t:"How far your Rs "+cap+" Cr reaches",b:b3});
-  cats.push({t:"Levers to optimise ROI",b:"In order: (1) sell more tonnes \u2014 fixed cost dilutes; (2) squeeze the foil vendor, ~75% of RM; (3) cut the "+nf(S.debDays)+"-day debtor cycle; (4) stretch supplier credit past "+nf(S.credDays)+" days."});
-  return cats;
-}
-
 function reportCost(M){
   var m=M.base,price=nf(S.price);
   var k=[["Selling price","Rs "+dec(price),"Rs/kg"],["Final RM cost","Rs "+dec(m.finalRM),"consumed"],["Ideal cost / kg","Rs "+dec(m.idealCostKg),"100% eff."],["Std wastage","Rs "+dec(m.wasteRs),"+"+dec(nf(S.wastage))+"%"],["Gross margin",pct(m.rmMargin/price*100,1),"Rs "+dec(m.rmMargin)+"/kg"],["Yield cost","Rs "+dec(m.baseCostM2),"/m\u00B2"]];
