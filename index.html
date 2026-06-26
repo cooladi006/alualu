@@ -450,7 +450,8 @@ function reportViability(M){
     {label:"Fixed cost",cells:T.map(function(t){return cr(t.fixedYr);}),p:P(function(t){return t.fixedYr/t.salesYr*100;})},
     {label:"Variable cost",cells:T.map(function(t){return cr(t.varYr);}),p:P(function(t){return t.varYr/t.salesYr*100;})},
     {label:"Operating profit",cells:T.map(function(t){return cr(t.ebit);}),strong:true,p:P(function(t){return t.ebit/t.salesYr*100;})},
-    {label:"Net profit (after tax)",cells:T.map(function(t){return cr(t.patEq);}),strong:true,color:function(i){return T[i].patEq>0?"var(--green)":"var(--red)";},p:P(function(t){return t.patEq/t.salesYr*100;})},
+    {label:"less Interest on debt",cells:T.map(function(t){return cr(t.interestCap);})},
+    {label:"Net profit (after int. & tax)",cells:T.map(function(t){return cr(t.patCap);}),strong:true,color:function(i){return T[i].patCap>0?"var(--green)":"var(--red)";},p:P(function(t){return t.patCap/t.salesYr*100;})},
     {label:"Working capital",cells:T.map(function(t){return cr(t.wc);})},
     {label:"Total investment",cells:T.map(function(t){return cr(t.I);}),strong:true},
     {label:"ROI on capital",cells:T.map(function(t){return pct(t.roiCap);}),strong:true,color:function(i){return T[i].pass?"var(--green)":"var(--red)";}}
@@ -672,7 +673,7 @@ function buildPDF(M){
 
     var ty=by+bh+22, fi=S.focus;
     p.txt(40,ty,"RETURNS BY MONTHLY VOLUME   (Rs Cr / year, grey = % of sales)",10.5,true,INK2);
-    var mtop=ty+10, hdrH=18, rowH=16.2;
+    var mtop=ty+10, hdrH=18, rowH=15.4;
     function pc(fn){return T.map(function(t){return t.salesYr?Math.round(fn(t))+"%":"";});}
     var rows=[];
     rows.push({sec:"PROFIT & LOSS"});
@@ -681,7 +682,8 @@ function buildPDF(M){
     rows.push({l:"Fixed cost",c:T.map(function(t){return cr(t.fixedYr);}),p:pc(function(t){return t.fixedYr/t.salesYr*100;})});
     rows.push({l:"Variable cost",c:T.map(function(t){return cr(t.varYr);}),p:pc(function(t){return t.varYr/t.salesYr*100;})});
     rows.push({l:"Operating profit",c:T.map(function(t){return cr(t.ebit);}),b:true,p:pc(function(t){return t.ebit/t.salesYr*100;})});
-    rows.push({l:"Net profit (after tax)",c:T.map(function(t){return cr(t.patEq);}),b:true,col:function(i){return T[i].patEq>0?GREEN:RED;},p:pc(function(t){return t.patEq/t.salesYr*100;})});
+    rows.push({l:"less Interest on debt",c:T.map(function(t){return cr(t.interestCap);})});
+    rows.push({l:"Net profit (after int. & tax)",c:T.map(function(t){return cr(t.patCap);}),b:true,col:function(i){return T[i].patCap>0?GREEN:RED;},p:pc(function(t){return t.patCap/t.salesYr*100;})});
     rows.push({sec:"INVESTMENT"});
     rows.push({l:"Fixed assets",c:T.map(function(){return cr(b.fixedAssets);})});
     rows.push({l:"Working capital",c:T.map(function(t){return cr(t.wc);})});
@@ -728,7 +730,7 @@ function buildPDF(M){
     p.txt(40,110,"CAPITAL & RETURNS  -  AT "+fv+" T / MONTH",9.5,true,INK2);
     tileRow(p,40,118,515,[
       {lab:"TOTAL CAPITAL EMPLOYED",val:"Rs "+cr(s.I)+" Cr",sub:"A + B"},
-      {lab:"RoCE",val:pct(s.roiCap),sub:"PAT Rs "+cr(s.patEq)+" Cr",col:s.pass?GREEN:RED,hl:true},
+      {lab:"RoCE",val:pct(s.roiCap),sub:"op. profit Rs "+cr(s.patEq)+" Cr",col:s.pass?GREEN:RED,hl:true},
       {lab:"EQUITY",val:"Rs "+cr(s.equityUsed)+" Cr",sub:pct(s.I?s.equityUsed/s.I*100:0)+" of capital"},
       {lab:"DEBT",val:"Rs "+cr(s.debtCap)+" Cr",sub:"D:E "+s.deCap.toFixed(2)+":1"},
       {lab:"RoE",val:pct(s.roeCap),sub:(s.roeCap>=tgt?"clears ":"below ")+tgt+"%",col:s.roeCap>=tgt?GREEN:RED,hl:true}
@@ -779,7 +781,7 @@ function buildPDF(M){
 
     var CCC=nf(S.rmDays)+nf(S.fgDays)+nf(S.debDays)-nf(S.credDays);
     var cyc=p.wrap("Cash stays tied up about "+CCC+" days: RM stock "+nf(S.rmDays)+" + finished goods "+nf(S.fgDays)+" + debtors "+nf(S.debDays)+" - suppliers' credit "+nf(S.credDays)+". That locked-up cash IS the working capital, and it must be funded before the first rupee of profit comes in.",112);
-    var maxMo=0;T.forEach(function(t){var need=Math.max(0,t.I-M.Ecap);var mo=(need>0&&t.patEq>0)?need/t.patEq*12:0;if(mo>maxMo)maxMo=mo;});
+    var maxMo=0;T.forEach(function(t){var need=Math.max(0,t.I-M.Ecap);var mo=(need>0&&t.patCap>0)?need/t.patCap*12:0;if(mo>maxMo)maxMo=mo;});
     var vtxt=(SF.belowMin?("Your Rs "+nf(S.equityCap)+" Cr does not fully cover even the smallest column - outside funding is needed from the start. "):("Up to ~"+dec(SF.vol,0)+"T your Rs "+nf(S.equityCap)+" Cr funds the fixed assets and the whole working-capital cycle - NO outside money. "))+"Past that, the outside need is a bridge the business repays from its own profit in about "+Math.round(maxMo)+" months - short-term working-capital finance, not permanent debt. Suppliers ("+nf(S.credDays)+"d) and salaries are paid on their due dates throughout.";
     var vt=p.wrap(vtxt,112);
     var gy=cby+86+18, gcol=[300,402,455,502,548];
@@ -794,14 +796,14 @@ function buildPDF(M){
     p.line(40,thy+16,555,thy+16,HAIR,0.7);
     var gyy=thy+16;
     T.forEach(function(t,i){
-      var eqd=Math.min(M.Ecap,t.I), need=Math.max(0,t.I-M.Ecap), mo=(need>0&&t.patEq>0)?need/t.patEq*12:0;
+      var eqd=Math.min(M.Ecap,t.I), need=Math.max(0,t.I-M.Ecap), mo=(need>0&&t.patCap>0)?need/t.patCap*12:0;
       if(i===S.focus)p.rect(40,gyy,515,18,SELC);
       p.txt(48,gyy+12.5,nf(t.vol)+"T",9.6,true,INK);
       p.rt(gcol[0],gyy+12.5,cr(t.I)+" Cr",9.4,false,INK2);
       p.rt(gcol[1],gyy+12.5,cr(eqd)+" Cr",9.4,false,INK2);
       p.rt(gcol[2],gyy+12.5,need>0?cr(need)+" Cr":"none",9.6,true,need>0?INK:GREEN);
-      p.rt(gcol[3],gyy+12.5,cr(t.patEq)+" Cr",9.4,false,INK2);
-      p.rt(gcol[4],gyy+12.5,need>0?(t.patEq>0?"~"+Math.round(mo)+" mo":"never"):"-",9.4,true,need>0?(t.patEq>0?INK:RED):INK3);
+      p.rt(gcol[3],gyy+12.5,cr(t.patCap)+" Cr",9.4,false,INK2);
+      p.rt(gcol[4],gyy+12.5,need>0?(t.patCap>0?"~"+Math.round(mo)+" mo":"never"):"-",9.4,true,need>0?(t.patCap>0?INK:RED):INK3);
       p.line(40,gyy+18,555,gyy+18,HAIRS,0.35);gyy+=18;
     });
     var vy=gyy+13;vt.forEach(function(ln){p.txt(48,vy,ln,8.4,false,INK3);vy+=11.5;});
@@ -863,7 +865,7 @@ function buildPDF(M){
     p.txt(40,110,"WHERE YOU STAND  -  AT "+fv+" T / MONTH",9.5,true,INK2);
     tileRow(p,40,118,515,[
       {lab:"RoCE NOW",val:pct(s.roiCap),sub:"target "+tgt+"%",col:s.roiCap>=tgt?GREEN:RED,hl:true},
-      {lab:"NET PROFIT / YR",val:"Rs "+cr(s.patEq)+" Cr",sub:pct(s.salesYr?s.patEq/s.salesYr*100:0)+" of sales",col:s.patEq>0?GREEN:RED},
+      {lab:"NET PROFIT / YR",val:"Rs "+cr(s.patCap)+" Cr",sub:"after Rs "+cr(s.interestCap)+" Cr int.",col:s.patCap>0?GREEN:RED},
       {lab:"CAPITAL EMPLOYED",val:"Rs "+cr(s.I)+" Cr"},
       {lab:"RoE NOW",val:pct(s.roeCap),sub:(s.roeCap>=tgt?"clears ":"below ")+tgt+"%",col:s.roeCap>=tgt?GREEN:RED}
     ],4,80,17);

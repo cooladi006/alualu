@@ -10,14 +10,14 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 4 0 R >>
 endobj
 4 0 obj
-<< /Length 14134 >>
+<< /Length 14537 >>
 stream
 0.055 0.486 0.341 rg 40.00 772.00 30.00 30.00 re f
 BT /F2 13 Tf 1.000 1.000 1.000 rg 47.00 781.00 Td (AA) Tj ET
 BT /F2 17 Tf 0.114 0.114 0.122 rg 80.00 787.00 Td (Alu-Alu Command) Tj ET
 BT /F1 10 Tf 0.431 0.431 0.451 rg 80.00 770.00 Td (Project viability  -  own funds & leverage) Tj ET
 BT /F1 9.5 Tf 0.604 0.604 0.627 rg 502.27 790.00 Td (Revision 10) Tj ET
-BT /F1 9.5 Tf 0.604 0.604 0.627 rg 502.26 775.00 Td (25 Jun 2026) Tj ET
+BT /F1 9.5 Tf 0.604 0.604 0.627 rg 502.26 775.00 Td (26 Jun 2026) Tj ET
 0.839 0.839 0.855 RG 1.00 w 40.00 754.00 m 555.00 754.00 l S
 0.839 0.839 0.855 RG 0.90 w 40.00 574.00 250.00 170.00 re S
 0.839 0.839 0.855 RG 0.90 w 300.00 574.00 255.00 170.00 re S
@@ -69,155 +69,161 @@ BT /F1 9 Tf 0.114 0.114 0.122 rg 514.48 599.00 Td (+ 6.00%) Tj ET
 BT /F2 9 Tf 0.114 0.114 0.122 rg 308.00 581.00 Td (RM cost / kg \(incl. wastage\)) Tj ET
 BT /F2 10.5 Tf 0.055 0.486 0.341 rg 500.97 581.00 Td (Rs 396/kg) Tj ET
 BT /F2 10.5 Tf 0.431 0.431 0.451 rg 40.00 552.00 Td (RETURNS BY MONTHLY VOLUME   \(Rs Cr / year, grey = % of sales\)) Tj ET
-0.929 0.965 0.945 rg 281.00 248.60 91.00 293.40 re f
+0.929 0.965 0.945 rg 281.00 246.80 91.00 295.20 re f
 BT /F2 10 Tf 0.114 0.114 0.122 rg 237.28 529.00 Td (25T) Tj ET
 BT /F2 10 Tf 0.055 0.486 0.341 rg 328.28 529.00 Td (50T) Tj ET
 BT /F2 10 Tf 0.114 0.114 0.122 rg 419.28 529.00 Td (75T) Tj ET
 BT /F2 10 Tf 0.114 0.114 0.122 rg 504.72 529.00 Td (100T) Tj ET
 0.839 0.839 0.855 RG 0.90 w 40.00 524.00 m 555.00 524.00 l S
-0.949 0.949 0.957 rg 40.00 507.80 515.00 16.20 re f
+0.949 0.949 0.957 rg 40.00 508.60 515.00 15.40 re f
 BT /F2 8.4 Tf 0.431 0.431 0.451 rg 48.00 513.00 Td (PROFIT & LOSS) Tj ET
-BT /F1 10 Tf 0.431 0.431 0.451 rg 48.00 496.80 Td (Sales) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 229.98 496.80 Td (14.70) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 320.98 496.80 Td (29.40) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 411.98 496.80 Td (44.10) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 502.98 496.80 Td (58.80) Tj ET
-0.910 0.910 0.925 RG 0.40 w 40.00 491.60 m 555.00 491.60 l S
-BT /F1 10 Tf 0.431 0.431 0.451 rg 48.00 480.60 Td (Raw material) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 229.98 480.60 Td (11.88) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 260.99 480.60 Td (81%) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 320.98 480.60 Td (23.75) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 351.99 480.60 Td (81%) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 411.98 480.60 Td (35.63) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 442.99 480.60 Td (81%) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 502.98 480.60 Td (47.51) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 533.99 480.60 Td (81%) Tj ET
-0.910 0.910 0.925 RG 0.40 w 40.00 475.40 m 555.00 475.40 l S
-BT /F1 10 Tf 0.431 0.431 0.451 rg 48.00 464.40 Td (Fixed cost) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 235.54 464.40 Td (1.72) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 260.99 464.40 Td (12%) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 326.54 464.40 Td (1.99) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 356.44 464.40 Td (7%) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 417.54 464.40 Td (2.31) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 447.44 464.40 Td (5%) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 508.54 464.40 Td (2.64) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 538.44 464.40 Td (4%) Tj ET
-0.910 0.910 0.925 RG 0.40 w 40.00 459.20 m 555.00 459.20 l S
-BT /F1 10 Tf 0.431 0.431 0.451 rg 48.00 448.20 Td (Variable cost) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 235.54 448.20 Td (0.42) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 265.44 448.20 Td (3%) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 326.54 448.20 Td (0.84) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 356.44 448.20 Td (3%) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 417.54 448.20 Td (1.26) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 447.44 448.20 Td (3%) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 508.54 448.20 Td (1.68) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 538.44 448.20 Td (3%) Tj ET
-0.910 0.910 0.925 RG 0.40 w 40.00 443.00 m 555.00 443.00 l S
-BT /F2 10 Tf 0.114 0.114 0.122 rg 48.00 432.00 Td (Operating profit) Tj ET
-BT /F2 10 Tf 0.114 0.114 0.122 rg 235.54 432.00 Td (0.68) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 265.44 432.00 Td (5%) Tj ET
-BT /F2 10 Tf 0.114 0.114 0.122 rg 326.54 432.00 Td (2.82) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 351.99 432.00 Td (10%) Tj ET
-BT /F2 10 Tf 0.114 0.114 0.122 rg 417.54 432.00 Td (4.89) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 442.99 432.00 Td (11%) Tj ET
-BT /F2 10 Tf 0.114 0.114 0.122 rg 508.54 432.00 Td (6.97) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 533.99 432.00 Td (12%) Tj ET
-0.910 0.910 0.925 RG 0.40 w 40.00 426.80 m 555.00 426.80 l S
-BT /F2 10 Tf 0.114 0.114 0.122 rg 48.00 415.80 Td (Net profit \(after tax\)) Tj ET
-BT /F2 10 Tf 0.055 0.486 0.341 rg 235.54 415.80 Td (0.68) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 265.44 415.80 Td (5%) Tj ET
-BT /F2 10 Tf 0.055 0.486 0.341 rg 326.54 415.80 Td (2.82) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 351.99 415.80 Td (10%) Tj ET
-BT /F2 10 Tf 0.055 0.486 0.341 rg 417.54 415.80 Td (4.89) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 442.99 415.80 Td (11%) Tj ET
-BT /F2 10 Tf 0.055 0.486 0.341 rg 508.54 415.80 Td (6.97) Tj ET
-BT /F1 8 Tf 0.604 0.604 0.627 rg 533.99 415.80 Td (12%) Tj ET
-0.910 0.910 0.925 RG 0.40 w 40.00 410.60 m 555.00 410.60 l S
-0.949 0.949 0.957 rg 40.00 394.40 515.00 16.20 re f
-BT /F2 8.4 Tf 0.431 0.431 0.451 rg 48.00 399.60 Td (INVESTMENT) Tj ET
-BT /F1 10 Tf 0.431 0.431 0.451 rg 48.00 383.40 Td (Fixed assets) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 235.54 383.40 Td (3.45) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 326.54 383.40 Td (3.45) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 417.54 383.40 Td (3.45) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 508.54 383.40 Td (3.45) Tj ET
-0.910 0.910 0.925 RG 0.40 w 40.00 378.20 m 555.00 378.20 l S
-BT /F1 10 Tf 0.431 0.431 0.451 rg 48.00 367.20 Td (Working capital) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 235.54 367.20 Td (3.60) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 326.54 367.20 Td (7.13) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 411.98 367.20 Td (10.67) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 502.98 367.20 Td (14.21) Tj ET
-0.910 0.910 0.925 RG 0.40 w 40.00 362.00 m 555.00 362.00 l S
-BT /F2 10 Tf 0.114 0.114 0.122 rg 48.00 351.00 Td (Total capital employed) Tj ET
-BT /F2 10 Tf 0.114 0.114 0.122 rg 235.54 351.00 Td (7.05) Tj ET
-BT /F2 10 Tf 0.114 0.114 0.122 rg 320.98 351.00 Td (10.58) Tj ET
-BT /F2 10 Tf 0.114 0.114 0.122 rg 411.98 351.00 Td (14.12) Tj ET
-BT /F2 10 Tf 0.114 0.114 0.122 rg 502.98 351.00 Td (17.66) Tj ET
-0.910 0.910 0.925 RG 0.40 w 40.00 345.80 m 555.00 345.80 l S
-0.949 0.949 0.957 rg 40.00 329.60 515.00 16.20 re f
-BT /F2 8.4 Tf 0.431 0.431 0.451 rg 48.00 334.80 Td (FUNDING WITH YOUR RS 8 CR EQUITY  \(balance = debt\)) Tj ET
-BT /F2 10 Tf 0.114 0.114 0.122 rg 48.00 318.60 Td (RoCE \(on capital\)) Tj ET
-BT /F2 10 Tf 0.773 0.188 0.290 rg 234.99 318.60 Td (10%) Tj ET
-BT /F2 10 Tf 0.773 0.188 0.290 rg 325.99 318.60 Td (27%) Tj ET
-BT /F2 10 Tf 0.055 0.486 0.341 rg 416.99 318.60 Td (35%) Tj ET
-BT /F2 10 Tf 0.055 0.486 0.341 rg 507.99 318.60 Td (39%) Tj ET
-0.910 0.910 0.925 RG 0.40 w 40.00 313.40 m 555.00 313.40 l S
-BT /F1 10 Tf 0.431 0.431 0.451 rg 48.00 302.40 Td (Your equity) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 235.54 302.40 Td (7.05) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 326.54 302.40 Td (8.00) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 417.54 302.40 Td (8.00) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 508.54 302.40 Td (8.00) Tj ET
-0.910 0.910 0.925 RG 0.40 w 40.00 297.20 m 555.00 297.20 l S
-BT /F1 10 Tf 0.431 0.431 0.451 rg 48.00 286.20 Td (Debt to arrange) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 235.54 286.20 Td (0.00) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 326.54 286.20 Td (2.58) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 417.54 286.20 Td (6.12) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 508.54 286.20 Td (9.66) Tj ET
-0.910 0.910 0.925 RG 0.40 w 40.00 281.00 m 555.00 281.00 l S
-BT /F1 10 Tf 0.431 0.431 0.451 rg 48.00 270.00 Td (Debt : Equity) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 227.20 270.00 Td (0.00:1) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 318.20 270.00 Td (0.32:1) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 409.20 270.00 Td (0.77:1) Tj ET
-BT /F1 10 Tf 0.114 0.114 0.122 rg 500.20 270.00 Td (1.21:1) Tj ET
-0.910 0.910 0.925 RG 0.40 w 40.00 264.80 m 555.00 264.80 l S
-BT /F2 10 Tf 0.114 0.114 0.122 rg 48.00 253.80 Td (RoE \(on your equity\)) Tj ET
-BT /F2 10 Tf 0.773 0.188 0.290 rg 234.99 253.80 Td (10%) Tj ET
-BT /F2 10 Tf 0.055 0.486 0.341 rg 325.99 253.80 Td (32%) Tj ET
-BT /F2 10 Tf 0.055 0.486 0.341 rg 416.99 253.80 Td (53%) Tj ET
-BT /F2 10 Tf 0.055 0.486 0.341 rg 507.99 253.80 Td (74%) Tj ET
-0.910 0.910 0.925 RG 0.40 w 40.00 248.60 m 555.00 248.60 l S
-0.839 0.839 0.855 RG 0.90 w 40.00 248.60 515.00 293.40 re S
-0.910 0.910 0.925 RG 0.50 w 190.00 542.00 m 190.00 248.60 l S
-0.910 0.910 0.925 RG 0.50 w 281.00 542.00 m 281.00 248.60 l S
-0.910 0.910 0.925 RG 0.50 w 372.00 542.00 m 372.00 248.60 l S
-0.910 0.910 0.925 RG 0.50 w 463.00 542.00 m 463.00 248.60 l S
-BT /F2 10.5 Tf 0.431 0.431 0.451 rg 40.00 230.60 Td (WHAT IT MEANS  -  achieving 30% efficiently) Tj ET
-0.839 0.839 0.855 RG 0.90 w 40.00 140.60 250.00 80.00 re S
-0.949 0.949 0.957 rg 40.00 202.60 250.00 18.00 re f
-BT /F2 9 Tf 0.431 0.431 0.451 rg 48.00 208.10 Td (Target & threshold) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 48.00 188.60 Td (On capital, the project clears 30% from 75T. At) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 48.00 177.00 Td (50T it earns 27% on Rs 10.58 Cr of total capital.) Tj ET
-0.839 0.839 0.855 RG 0.90 w 300.00 140.60 255.00 80.00 re S
-0.949 0.949 0.957 rg 300.00 202.60 255.00 18.00 re f
-BT /F2 9 Tf 0.431 0.431 0.451 rg 308.00 208.10 Td (Funding with your Rs 8 Cr) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 188.60 Td (Your equity is fixed at Rs 8 Cr; the balance is) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 177.00 Td (debt. At 50T you put in Rs 8.00 Cr and borrow Rs) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 165.40 Td (2.58 Cr \(D:E 0.32:1\), giving 32% on your own money) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 153.80 Td (- above your 30% goal.) Tj ET
-0.839 0.839 0.855 RG 0.90 w 40.00 49.60 250.00 80.00 re S
-0.949 0.949 0.957 rg 40.00 111.60 250.00 18.00 re f
-BT /F2 9 Tf 0.431 0.431 0.451 rg 48.00 117.10 Td (How far your Rs 8 Cr reaches) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 48.00 97.60 Td (On Rs 8 Cr alone you self-fund up to ~32 T/mo \(Rs) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 48.00 86.00 Td (18.66 Cr turnover\) at 16% RoCE; beyond that you) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 48.00 74.40 Td (must add debt. Full P&L on page 2.) Tj ET
-0.839 0.839 0.855 RG 0.90 w 300.00 49.60 255.00 80.00 re S
-0.949 0.949 0.957 rg 300.00 111.60 255.00 18.00 re f
-BT /F2 9 Tf 0.431 0.431 0.451 rg 308.00 117.10 Td (Levers to optimise ROI) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 97.60 Td (In order: \(1\) sell more tonnes - fixed cost) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 86.00 Td (dilutes; \(2\) squeeze the foil vendor, ~75% of RM;) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 74.40 Td (\(3\) cut the 75-day debtor cycle; \(4\) stretch) Tj ET
-BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 62.80 Td (supplier credit past 30 days.) Tj ET
+BT /F1 10 Tf 0.431 0.431 0.451 rg 48.00 497.60 Td (Sales) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 229.98 497.60 Td (14.70) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 320.98 497.60 Td (29.40) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 411.98 497.60 Td (44.10) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 502.98 497.60 Td (58.80) Tj ET
+0.910 0.910 0.925 RG 0.40 w 40.00 493.20 m 555.00 493.20 l S
+BT /F1 10 Tf 0.431 0.431 0.451 rg 48.00 482.20 Td (Raw material) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 229.98 482.20 Td (11.88) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 260.99 482.20 Td (81%) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 320.98 482.20 Td (23.75) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 351.99 482.20 Td (81%) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 411.98 482.20 Td (35.63) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 442.99 482.20 Td (81%) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 502.98 482.20 Td (47.51) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 533.99 482.20 Td (81%) Tj ET
+0.910 0.910 0.925 RG 0.40 w 40.00 477.80 m 555.00 477.80 l S
+BT /F1 10 Tf 0.431 0.431 0.451 rg 48.00 466.80 Td (Fixed cost) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 235.54 466.80 Td (1.72) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 260.99 466.80 Td (12%) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 326.54 466.80 Td (1.99) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 356.44 466.80 Td (7%) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 417.54 466.80 Td (2.31) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 447.44 466.80 Td (5%) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 508.54 466.80 Td (2.64) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 538.44 466.80 Td (4%) Tj ET
+0.910 0.910 0.925 RG 0.40 w 40.00 462.40 m 555.00 462.40 l S
+BT /F1 10 Tf 0.431 0.431 0.451 rg 48.00 451.40 Td (Variable cost) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 235.54 451.40 Td (0.42) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 265.44 451.40 Td (3%) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 326.54 451.40 Td (0.84) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 356.44 451.40 Td (3%) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 417.54 451.40 Td (1.26) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 447.44 451.40 Td (3%) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 508.54 451.40 Td (1.68) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 538.44 451.40 Td (3%) Tj ET
+0.910 0.910 0.925 RG 0.40 w 40.00 447.00 m 555.00 447.00 l S
+BT /F2 10 Tf 0.114 0.114 0.122 rg 48.00 436.00 Td (Operating profit) Tj ET
+BT /F2 10 Tf 0.114 0.114 0.122 rg 235.54 436.00 Td (0.68) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 265.44 436.00 Td (5%) Tj ET
+BT /F2 10 Tf 0.114 0.114 0.122 rg 326.54 436.00 Td (2.82) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 351.99 436.00 Td (10%) Tj ET
+BT /F2 10 Tf 0.114 0.114 0.122 rg 417.54 436.00 Td (4.89) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 442.99 436.00 Td (11%) Tj ET
+BT /F2 10 Tf 0.114 0.114 0.122 rg 508.54 436.00 Td (6.97) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 533.99 436.00 Td (12%) Tj ET
+0.910 0.910 0.925 RG 0.40 w 40.00 431.60 m 555.00 431.60 l S
+BT /F1 10 Tf 0.431 0.431 0.451 rg 48.00 420.60 Td (less Interest on debt) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 235.54 420.60 Td (0.00) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 326.54 420.60 Td (0.28) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 417.54 420.60 Td (0.67) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 508.54 420.60 Td (1.06) Tj ET
+0.910 0.910 0.925 RG 0.40 w 40.00 416.20 m 555.00 416.20 l S
+BT /F2 10 Tf 0.114 0.114 0.122 rg 48.00 405.20 Td (Net profit \(after int. & tax\)) Tj ET
+BT /F2 10 Tf 0.055 0.486 0.341 rg 235.54 405.20 Td (0.68) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 265.44 405.20 Td (5%) Tj ET
+BT /F2 10 Tf 0.055 0.486 0.341 rg 326.54 405.20 Td (2.54) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 356.44 405.20 Td (9%) Tj ET
+BT /F2 10 Tf 0.055 0.486 0.341 rg 417.54 405.20 Td (4.22) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 442.99 405.20 Td (10%) Tj ET
+BT /F2 10 Tf 0.055 0.486 0.341 rg 508.54 405.20 Td (5.91) Tj ET
+BT /F1 8 Tf 0.604 0.604 0.627 rg 533.99 405.20 Td (10%) Tj ET
+0.910 0.910 0.925 RG 0.40 w 40.00 400.80 m 555.00 400.80 l S
+0.949 0.949 0.957 rg 40.00 385.40 515.00 15.40 re f
+BT /F2 8.4 Tf 0.431 0.431 0.451 rg 48.00 389.80 Td (INVESTMENT) Tj ET
+BT /F1 10 Tf 0.431 0.431 0.451 rg 48.00 374.40 Td (Fixed assets) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 235.54 374.40 Td (3.45) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 326.54 374.40 Td (3.45) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 417.54 374.40 Td (3.45) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 508.54 374.40 Td (3.45) Tj ET
+0.910 0.910 0.925 RG 0.40 w 40.00 370.00 m 555.00 370.00 l S
+BT /F1 10 Tf 0.431 0.431 0.451 rg 48.00 359.00 Td (Working capital) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 235.54 359.00 Td (3.60) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 326.54 359.00 Td (7.13) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 411.98 359.00 Td (10.67) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 502.98 359.00 Td (14.21) Tj ET
+0.910 0.910 0.925 RG 0.40 w 40.00 354.60 m 555.00 354.60 l S
+BT /F2 10 Tf 0.114 0.114 0.122 rg 48.00 343.60 Td (Total capital employed) Tj ET
+BT /F2 10 Tf 0.114 0.114 0.122 rg 235.54 343.60 Td (7.05) Tj ET
+BT /F2 10 Tf 0.114 0.114 0.122 rg 320.98 343.60 Td (10.58) Tj ET
+BT /F2 10 Tf 0.114 0.114 0.122 rg 411.98 343.60 Td (14.12) Tj ET
+BT /F2 10 Tf 0.114 0.114 0.122 rg 502.98 343.60 Td (17.66) Tj ET
+0.910 0.910 0.925 RG 0.40 w 40.00 339.20 m 555.00 339.20 l S
+0.949 0.949 0.957 rg 40.00 323.80 515.00 15.40 re f
+BT /F2 8.4 Tf 0.431 0.431 0.451 rg 48.00 328.20 Td (FUNDING WITH YOUR RS 8 CR EQUITY  \(balance = debt\)) Tj ET
+BT /F2 10 Tf 0.114 0.114 0.122 rg 48.00 312.80 Td (RoCE \(on capital\)) Tj ET
+BT /F2 10 Tf 0.773 0.188 0.290 rg 234.99 312.80 Td (10%) Tj ET
+BT /F2 10 Tf 0.773 0.188 0.290 rg 325.99 312.80 Td (27%) Tj ET
+BT /F2 10 Tf 0.055 0.486 0.341 rg 416.99 312.80 Td (35%) Tj ET
+BT /F2 10 Tf 0.055 0.486 0.341 rg 507.99 312.80 Td (39%) Tj ET
+0.910 0.910 0.925 RG 0.40 w 40.00 308.40 m 555.00 308.40 l S
+BT /F1 10 Tf 0.431 0.431 0.451 rg 48.00 297.40 Td (Your equity) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 235.54 297.40 Td (7.05) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 326.54 297.40 Td (8.00) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 417.54 297.40 Td (8.00) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 508.54 297.40 Td (8.00) Tj ET
+0.910 0.910 0.925 RG 0.40 w 40.00 293.00 m 555.00 293.00 l S
+BT /F1 10 Tf 0.431 0.431 0.451 rg 48.00 282.00 Td (Debt to arrange) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 235.54 282.00 Td (0.00) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 326.54 282.00 Td (2.58) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 417.54 282.00 Td (6.12) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 508.54 282.00 Td (9.66) Tj ET
+0.910 0.910 0.925 RG 0.40 w 40.00 277.60 m 555.00 277.60 l S
+BT /F1 10 Tf 0.431 0.431 0.451 rg 48.00 266.60 Td (Debt : Equity) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 227.20 266.60 Td (0.00:1) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 318.20 266.60 Td (0.32:1) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 409.20 266.60 Td (0.77:1) Tj ET
+BT /F1 10 Tf 0.114 0.114 0.122 rg 500.20 266.60 Td (1.21:1) Tj ET
+0.910 0.910 0.925 RG 0.40 w 40.00 262.20 m 555.00 262.20 l S
+BT /F2 10 Tf 0.114 0.114 0.122 rg 48.00 251.20 Td (RoE \(on your equity\)) Tj ET
+BT /F2 10 Tf 0.773 0.188 0.290 rg 234.99 251.20 Td (10%) Tj ET
+BT /F2 10 Tf 0.055 0.486 0.341 rg 325.99 251.20 Td (32%) Tj ET
+BT /F2 10 Tf 0.055 0.486 0.341 rg 416.99 251.20 Td (53%) Tj ET
+BT /F2 10 Tf 0.055 0.486 0.341 rg 507.99 251.20 Td (74%) Tj ET
+0.910 0.910 0.925 RG 0.40 w 40.00 246.80 m 555.00 246.80 l S
+0.839 0.839 0.855 RG 0.90 w 40.00 246.80 515.00 295.20 re S
+0.910 0.910 0.925 RG 0.50 w 190.00 542.00 m 190.00 246.80 l S
+0.910 0.910 0.925 RG 0.50 w 281.00 542.00 m 281.00 246.80 l S
+0.910 0.910 0.925 RG 0.50 w 372.00 542.00 m 372.00 246.80 l S
+0.910 0.910 0.925 RG 0.50 w 463.00 542.00 m 463.00 246.80 l S
+BT /F2 10.5 Tf 0.431 0.431 0.451 rg 40.00 228.80 Td (WHAT IT MEANS  -  achieving 30% efficiently) Tj ET
+0.839 0.839 0.855 RG 0.90 w 40.00 138.80 250.00 80.00 re S
+0.949 0.949 0.957 rg 40.00 200.80 250.00 18.00 re f
+BT /F2 9 Tf 0.431 0.431 0.451 rg 48.00 206.30 Td (Target & threshold) Tj ET
+BT /F1 8.9 Tf 0.114 0.114 0.122 rg 48.00 186.80 Td (On capital, the project clears 30% from 75T. At) Tj ET
+BT /F1 8.9 Tf 0.114 0.114 0.122 rg 48.00 175.20 Td (50T it earns 27% on Rs 10.58 Cr of total capital.) Tj ET
+0.839 0.839 0.855 RG 0.90 w 300.00 138.80 255.00 80.00 re S
+0.949 0.949 0.957 rg 300.00 200.80 255.00 18.00 re f
+BT /F2 9 Tf 0.431 0.431 0.451 rg 308.00 206.30 Td (Funding with your Rs 8 Cr) Tj ET
+BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 186.80 Td (Your equity is fixed at Rs 8 Cr; the balance is) Tj ET
+BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 175.20 Td (debt. At 50T you put in Rs 8.00 Cr and borrow Rs) Tj ET
+BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 163.60 Td (2.58 Cr \(D:E 0.32:1\), giving 32% on your own money) Tj ET
+BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 152.00 Td (- above your 30% goal.) Tj ET
+0.839 0.839 0.855 RG 0.90 w 40.00 47.80 250.00 80.00 re S
+0.949 0.949 0.957 rg 40.00 109.80 250.00 18.00 re f
+BT /F2 9 Tf 0.431 0.431 0.451 rg 48.00 115.30 Td (How far your Rs 8 Cr reaches) Tj ET
+BT /F1 8.9 Tf 0.114 0.114 0.122 rg 48.00 95.80 Td (On Rs 8 Cr alone you self-fund up to ~32 T/mo \(Rs) Tj ET
+BT /F1 8.9 Tf 0.114 0.114 0.122 rg 48.00 84.20 Td (18.66 Cr turnover\) at 16% RoCE; beyond that you) Tj ET
+BT /F1 8.9 Tf 0.114 0.114 0.122 rg 48.00 72.60 Td (must add debt. Full P&L on page 2.) Tj ET
+0.839 0.839 0.855 RG 0.90 w 300.00 47.80 255.00 80.00 re S
+0.949 0.949 0.957 rg 300.00 109.80 255.00 18.00 re f
+BT /F2 9 Tf 0.431 0.431 0.451 rg 308.00 115.30 Td (Levers to optimise ROI) Tj ET
+BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 95.80 Td (In order: \(1\) sell more tonnes - fixed cost) Tj ET
+BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 84.20 Td (dilutes; \(2\) squeeze the foil vendor, ~75% of RM;) Tj ET
+BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 72.60 Td (\(3\) cut the 75-day debtor cycle; \(4\) stretch) Tj ET
+BT /F1 8.9 Tf 0.114 0.114 0.122 rg 308.00 61.00 Td (supplier credit past 30 days.) Tj ET
 0.910 0.910 0.925 RG 0.60 w 40.00 27.00 m 555.00 27.00 l S
-BT /F1 8.5 Tf 0.604 0.604 0.627 rg 40.00 14.00 Td (Alu-Alu Command  -  page 1 of 4  -  generated 25 Jun 2026) Tj ET
+BT /F1 8.5 Tf 0.604 0.604 0.627 rg 40.00 14.00 Td (Alu-Alu Command  -  page 1 of 4  -  generated 26 Jun 2026) Tj ET
 endstream
 endobj
 5 0 obj
@@ -230,13 +236,13 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 8 0 R >>
 endobj
 8 0 obj
-<< /Length 5577 >>
+<< /Length 5586 >>
 stream
 0.055 0.486 0.341 rg 40.00 772.00 30.00 30.00 re f
 BT /F2 13 Tf 1.000 1.000 1.000 rg 47.00 781.00 Td (AA) Tj ET
 BT /F2 17 Tf 0.114 0.114 0.122 rg 80.00 787.00 Td (Targets, breakeven & control) Tj ET
 BT /F1 10 Tf 0.431 0.431 0.451 rg 80.00 770.00 Td (What to hold to hit 30% RoCE  -  at 50 T/mo) Tj ET
-BT /F1 9.5 Tf 0.604 0.604 0.627 rg 502.26 775.00 Td (25 Jun 2026) Tj ET
+BT /F1 9.5 Tf 0.604 0.604 0.627 rg 502.26 775.00 Td (26 Jun 2026) Tj ET
 0.839 0.839 0.855 RG 1.00 w 40.00 754.00 m 555.00 754.00 l S
 BT /F2 9.5 Tf 0.431 0.431 0.451 rg 40.00 732.00 Td (WHERE YOU STAND  -  AT 50 T / MONTH) Tj ET
 0.929 0.965 0.945 rg 40.00 644.00 125.75 80.00 re f
@@ -247,8 +253,8 @@ BT /F1 7 Tf 0.604 0.604 0.627 rg 84.40 652.00 Td (target 30%) Tj ET
 0.933 0.965 0.945 rg 169.75 644.00 125.75 80.00 re f
 0.839 0.839 0.855 RG 0.70 w 169.75 644.00 125.75 80.00 re S
 BT /F2 7.2 Tf 0.431 0.431 0.451 rg 202.49 707.00 Td (NET PROFIT / YR) Tj ET
-BT /F2 17 Tf 0.055 0.486 0.341 rg 191.64 664.00 Td (Rs 2.82 Cr) Tj ET
-BT /F1 7 Tf 0.604 0.604 0.627 rg 211.43 652.00 Td (10% of sales) Tj ET
+BT /F2 17 Tf 0.055 0.486 0.341 rg 191.64 664.00 Td (Rs 2.54 Cr) Tj ET
+BT /F1 7 Tf 0.604 0.604 0.627 rg 198.83 652.00 Td (after Rs 0.28 Cr int.) Tj ET
 0.933 0.965 0.945 rg 299.50 644.00 125.75 80.00 re f
 0.839 0.839 0.855 RG 0.70 w 299.50 644.00 125.75 80.00 re S
 BT /F2 7.2 Tf 0.431 0.431 0.451 rg 325.73 707.00 Td (CAPITAL EMPLOYED) Tj ET
@@ -306,20 +312,20 @@ BT /F1 9 Tf 0.114 0.114 0.122 rg 48.00 280.00 Td (At 50T you earn 27%, below 30%
 BT /F1 9 Tf 0.114 0.114 0.122 rg 48.00 266.50 Td (13.6L/mo; OR collect in 60 days; OR hold 28 days of inventory. Combine two and you clear 30% with a cushion.) Tj ET
 BT /F1 9 Tf 0.114 0.114 0.122 rg 48.00 253.00 Td (In a weak month you may not control volume - but debtors and inventory are levers you always can pull.) Tj ET
 0.910 0.910 0.925 RG 0.60 w 40.00 27.00 m 555.00 27.00 l S
-BT /F1 8.5 Tf 0.604 0.604 0.627 rg 40.00 14.00 Td (Alu-Alu Command  -  page 2 of 4  -  control at 50 T/mo  -  25 Jun 2026) Tj ET
+BT /F1 8.5 Tf 0.604 0.604 0.627 rg 40.00 14.00 Td (Alu-Alu Command  -  page 2 of 4  -  control at 50 T/mo  -  26 Jun 2026) Tj ET
 endstream
 endobj
 9 0 obj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 10 0 R >>
 endobj
 10 0 obj
-<< /Length 10613 >>
+<< /Length 10620 >>
 stream
 0.055 0.486 0.341 rg 40.00 772.00 30.00 30.00 re f
 BT /F2 13 Tf 1.000 1.000 1.000 rg 47.00 781.00 Td (AA) Tj ET
 BT /F2 17 Tf 0.114 0.114 0.122 rg 80.00 787.00 Td (Capital & self-funding) Tj ET
 BT /F1 10 Tf 0.431 0.431 0.451 rg 80.00 770.00 Td (How the money is built  -  detail at 50 T/mo) Tj ET
-BT /F1 9.5 Tf 0.604 0.604 0.627 rg 502.26 775.00 Td (25 Jun 2026) Tj ET
+BT /F1 9.5 Tf 0.604 0.604 0.627 rg 502.26 775.00 Td (26 Jun 2026) Tj ET
 0.839 0.839 0.855 RG 1.00 w 40.00 754.00 m 555.00 754.00 l S
 BT /F2 9.5 Tf 0.431 0.431 0.451 rg 40.00 732.00 Td (CAPITAL & RETURNS  -  AT 50 T / MONTH) Tj ET
 0.933 0.965 0.945 rg 40.00 644.00 99.00 80.00 re f
@@ -331,7 +337,7 @@ BT /F1 7 Tf 0.604 0.604 0.627 rg 81.18 652.00 Td (A + B) Tj ET
 0.839 0.839 0.855 RG 0.70 w 144.00 644.00 99.00 80.00 re S
 BT /F2 7.2 Tf 0.431 0.431 0.451 rg 184.57 707.00 Td (RoCE) Tj ET
 BT /F2 17 Tf 0.773 0.188 0.290 rg 176.49 664.00 Td (27%) Tj ET
-BT /F1 7 Tf 0.604 0.604 0.627 rg 168.72 652.00 Td (PAT Rs 2.82 Cr) Tj ET
+BT /F1 7 Tf 0.604 0.604 0.627 rg 159.70 652.00 Td (op. profit Rs 2.82 Cr) Tj ET
 0.933 0.965 0.945 rg 248.00 644.00 99.00 80.00 re f
 0.839 0.839 0.855 RG 0.70 w 248.00 644.00 99.00 80.00 re S
 BT /F2 7.2 Tf 0.431 0.431 0.451 rg 283.24 707.00 Td (EQUITY) Tj ET
@@ -437,29 +443,29 @@ BT /F2 9.6 Tf 0.114 0.114 0.122 rg 48.00 149.50 Td (50T) Tj ET
 BT /F1 9.4 Tf 0.431 0.431 0.451 rg 262.96 149.50 Td (10.58 Cr) Tj ET
 BT /F1 9.4 Tf 0.431 0.431 0.451 rg 370.19 149.50 Td (8.00 Cr) Tj ET
 BT /F2 9.6 Tf 0.114 0.114 0.122 rg 422.51 149.50 Td (2.58 Cr) Tj ET
-BT /F1 9.4 Tf 0.431 0.431 0.451 rg 470.19 149.50 Td (2.82 Cr) Tj ET
-BT /F2 9.4 Tf 0.114 0.114 0.122 rg 520.83 149.50 Td (~11 mo) Tj ET
+BT /F1 9.4 Tf 0.431 0.431 0.451 rg 470.19 149.50 Td (2.54 Cr) Tj ET
+BT /F2 9.4 Tf 0.114 0.114 0.122 rg 520.83 149.50 Td (~12 mo) Tj ET
 0.910 0.910 0.925 RG 0.35 w 40.00 144.00 m 555.00 144.00 l S
 BT /F2 9.6 Tf 0.114 0.114 0.122 rg 48.00 131.50 Td (75T) Tj ET
 BT /F1 9.4 Tf 0.431 0.431 0.451 rg 262.96 131.50 Td (14.12 Cr) Tj ET
 BT /F1 9.4 Tf 0.431 0.431 0.451 rg 370.19 131.50 Td (8.00 Cr) Tj ET
 BT /F2 9.6 Tf 0.114 0.114 0.122 rg 422.51 131.50 Td (6.12 Cr) Tj ET
-BT /F1 9.4 Tf 0.431 0.431 0.451 rg 470.19 131.50 Td (4.89 Cr) Tj ET
-BT /F2 9.4 Tf 0.114 0.114 0.122 rg 520.83 131.50 Td (~15 mo) Tj ET
+BT /F1 9.4 Tf 0.431 0.431 0.451 rg 470.19 131.50 Td (4.22 Cr) Tj ET
+BT /F2 9.4 Tf 0.114 0.114 0.122 rg 520.83 131.50 Td (~17 mo) Tj ET
 0.910 0.910 0.925 RG 0.35 w 40.00 126.00 m 555.00 126.00 l S
 BT /F2 9.6 Tf 0.114 0.114 0.122 rg 48.00 113.50 Td (100T) Tj ET
 BT /F1 9.4 Tf 0.431 0.431 0.451 rg 262.96 113.50 Td (17.66 Cr) Tj ET
 BT /F1 9.4 Tf 0.431 0.431 0.451 rg 370.19 113.50 Td (8.00 Cr) Tj ET
 BT /F2 9.6 Tf 0.114 0.114 0.122 rg 422.51 113.50 Td (9.66 Cr) Tj ET
-BT /F1 9.4 Tf 0.431 0.431 0.451 rg 470.19 113.50 Td (6.97 Cr) Tj ET
-BT /F2 9.4 Tf 0.114 0.114 0.122 rg 520.83 113.50 Td (~17 mo) Tj ET
+BT /F1 9.4 Tf 0.431 0.431 0.451 rg 470.19 113.50 Td (5.91 Cr) Tj ET
+BT /F2 9.4 Tf 0.114 0.114 0.122 rg 520.83 113.50 Td (~20 mo) Tj ET
 0.910 0.910 0.925 RG 0.35 w 40.00 108.00 m 555.00 108.00 l S
 BT /F1 8.4 Tf 0.604 0.604 0.627 rg 48.00 95.00 Td (Up to ~32T your Rs 8 Cr funds the fixed assets and the whole working-capital cycle - NO outside money. Past) Tj ET
-BT /F1 8.4 Tf 0.604 0.604 0.627 rg 48.00 83.50 Td (that, the outside need is a bridge the business repays from its own profit in about 17 months - short-term) Tj ET
+BT /F1 8.4 Tf 0.604 0.604 0.627 rg 48.00 83.50 Td (that, the outside need is a bridge the business repays from its own profit in about 20 months - short-term) Tj ET
 BT /F1 8.4 Tf 0.604 0.604 0.627 rg 48.00 72.00 Td (working-capital finance, not permanent debt. Suppliers \(30d\) and salaries are paid on their due dates) Tj ET
 BT /F1 8.4 Tf 0.604 0.604 0.627 rg 48.00 60.50 Td (throughout.) Tj ET
 0.910 0.910 0.925 RG 0.60 w 40.00 27.00 m 555.00 27.00 l S
-BT /F1 8.5 Tf 0.604 0.604 0.627 rg 40.00 14.00 Td (Alu-Alu Command  -  page 3 of 4  -  detail at 50 T/mo  -  25 Jun 2026) Tj ET
+BT /F1 8.5 Tf 0.604 0.604 0.627 rg 40.00 14.00 Td (Alu-Alu Command  -  page 3 of 4  -  detail at 50 T/mo  -  26 Jun 2026) Tj ET
 endstream
 endobj
 11 0 obj
@@ -472,7 +478,7 @@ stream
 BT /F2 13 Tf 1.000 1.000 1.000 rg 47.00 781.00 Td (AA) Tj ET
 BT /F2 17 Tf 0.114 0.114 0.122 rg 80.00 787.00 Td (Monthly cost break-up) Tj ET
 BT /F1 10 Tf 0.431 0.431 0.451 rg 80.00 770.00 Td (Every line, across all four volumes  -  50T highlighted) Tj ET
-BT /F1 9.5 Tf 0.604 0.604 0.627 rg 502.26 775.00 Td (25 Jun 2026) Tj ET
+BT /F1 9.5 Tf 0.604 0.604 0.627 rg 502.26 775.00 Td (26 Jun 2026) Tj ET
 0.839 0.839 0.855 RG 1.00 w 40.00 754.00 m 555.00 754.00 l S
 0.949 0.949 0.957 rg 40.00 711.00 515.00 21.00 re f
 BT /F2 9.2 Tf 0.431 0.431 0.451 rg 48.00 717.50 Td (COST PER MONTH BY VOLUME   \(Rs\)) Tj ET
@@ -635,7 +641,7 @@ BT /F1 9.6 Tf 0.114 0.114 0.122 rg 48.00 106.50 Td (drives the conversion cost d
 BT /F1 9.6 Tf 0.114 0.114 0.122 rg 48.00 92.00 Td (price at Rs 490/kg, every extra tonne widens the gross margin - the single biggest lever on this) Tj ET
 BT /F1 9.6 Tf 0.114 0.114 0.122 rg 48.00 77.50 Td (project.) Tj ET
 0.910 0.910 0.925 RG 0.60 w 40.00 27.00 m 555.00 27.00 l S
-BT /F1 8.5 Tf 0.604 0.604 0.627 rg 40.00 14.00 Td (Alu-Alu Command  -  page 4 of 4  -  all four volumes  -  25 Jun 2026) Tj ET
+BT /F1 8.5 Tf 0.604 0.604 0.627 rg 40.00 14.00 Td (Alu-Alu Command  -  page 4 of 4  -  all four volumes  -  26 Jun 2026) Tj ET
 endstream
 endobj
 xref
@@ -645,16 +651,16 @@ xref
 0000000064 00000 n 
 0000000140 00000 n 
 0000000276 00000 n 
-0000014462 00000 n 
-0000014559 00000 n 
-0000014661 00000 n 
-0000014797 00000 n 
-0000020425 00000 n 
-0000020562 00000 n 
-0000031228 00000 n 
-0000031366 00000 n 
+0000014865 00000 n 
+0000014962 00000 n 
+0000015064 00000 n 
+0000015200 00000 n 
+0000020837 00000 n 
+0000020974 00000 n 
+0000031647 00000 n 
+0000031785 00000 n 
 trailer
 << /Size 13 /Root 1 0 R >>
 startxref
-42959
+43378
 %%EOF
